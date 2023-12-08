@@ -13,71 +13,119 @@
 
 <body>
     <div id="start">
-        <h2 id="title">RPG</h2>
-        <button id="startBnt">Start</button>
+        <h2 id="title">RPG 冒險</h2>
+        <button id="startBnt" class="link">開始遊戲</button>
         <div id="test"></div>
     </div>
 
     <div id="main">
         <div id="menu">
-            <div id="player">玩家區</div>
+            <div id="player"></div>
         </div>
         <div id="content">
             <div id="text">文字區</div>
+            <div id="img"></div>
             <div id="opts"></div>
-            <div id="fightText">戰鬥文字</div>
-            <div id="fightImg">戰鬥圖片</div>
-            <div id="fightOpts">戰鬥選項</div>
         </div>
     </div>
 
     <script>
 
-        const Text = {
-            start: '<p>在一個遙遠的王國裡，和平的日子即將被一場神秘的威脅打破。一天，勇者阿瑟收到了一封來自皇宮的神秘信件，被國王招見。</p><p>阿瑟穿過宏偉的城牆，踏入皇宮的大廳。國王端坐在金光閃閃的寶座上，面容凝重。他告訴阿瑟，近日城外的一片神秘森林出現了奇異的現象，傳言有一群可怕的怪物正在破壞村莊，居民們深受困擾。</p><p>「勇者阿瑟，我需要你的力量，前往那片森林，找出並討伐這些神秘怪物。你的勇氣和智慧是我們唯一的希望。」國王的聲音中充滿了期待。</p><p>阿瑟點頭答應，知道這將是一場充滿冒險與挑戰的旅程。他準備好了武器，踏上了通向神秘森林的道路。一場未知的冒險即將展開，而勇者阿瑟將成為王國的最後一線防線。</p>',
-            start2: '<p>勇者踏出城堡，街道上充滿期待的目光。市民們低語祈禱，繁忙的城市生活與即將展開的冒險在此交匯。</p>',
-            street: ['<p>阿瑟站在熙熙攘攘的街道，人群匆忙而熱情。</p>'],
-            shop: ['充滿金屬香氣，陳列著鐵劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。'],
-            forest_0: ['<p>阿瑟穿越森林，樹影婆娑，神秘氛圍籠罩。他警惕地前行。</p>'],
-            fight: ['你遇到了<span id="monster"></span>！']
+        const OO = {
+
+
         }
 
-        const Opts = {
+        const Event = {
             start: {
+                type: 'place',
                 link: ['出發！'],
-                id: ['start2']
+                id: ['start2'],
+                text: ['<p>在一個遙遠的王國裡，和平的日子即將被一場神秘的威脅打破。一天，勇者阿瑟收到了一封來自皇宮的神秘信件，被國王招見。</p><p>阿瑟穿過宏偉的城牆，踏入皇宮的大廳。國王端坐在金光閃閃的寶座上，面容凝重。他告訴阿瑟，近日城外的一片神秘森林出現了奇異的現象，傳言有一群可怕的怪物正在破壞村莊，居民們深受困擾。</p><p>「勇者阿瑟，我需要你的力量，前往那片森林，找出並討伐這些神秘怪物。你的勇氣和智慧是我們唯一的希望。」國王的聲音中充滿了期待。</p><p>阿瑟點頭答應，知道這將是一場充滿冒險與挑戰的旅程。他準備好了武器，踏上了通向神秘森林的道路。一場未知的冒險即將展開，而勇者阿瑟將成為王國的最後一線防線。</p>']
             },
             start2: {
+                type: 'place',
                 link: ['走入街道'],
-                id: ['street']
+                id: ['street'],
+                text: ['<p>勇者踏出城堡，街道上充滿期待的目光。市民們低語祈禱，繁忙的城市生活與即將展開的冒險在此交匯。</p>']
             },
             street: {
+                type: 'place',
                 link: ['森林', '商店'],
-                id: ['forest_0', 'shop']
+                id: ['forest_0', 'shop'],
+                text: ['<p>阿瑟站在熙熙攘攘的街道，人群匆忙而熱情。</p>']
             },
             shop: {
-                link: ['木劍｜10G｜+3攻擊力', '鐵劍｜30G｜+5攻擊力 ,', '返回街道'],
-                id: ['woodSword', 'ironSword', 'street']
+                type: 'place',
+                link: ['木劍｜10G｜+3攻擊力', '鐵劍｜30G｜+5攻擊力', '返回街道'],
+                id: ['woodSword', 'ironSword', 'street'],
+                text: ['<p>充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>']
             },
             forest_0: {
+                type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '回到街道'],
-                id: ['forest_0', 'forest_1', 'street']
+                id: ['forest_0', 'forest_1', 'street'],
+                text: ['<p>阿瑟穿越森林，樹影婆娑，神秘氛圍籠罩。他警惕地前行。</p>']
             },
             forest_1: {
+                type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
-                id: ['forest_1', 'forest_2', 'forest_0']
+                id: ['forest_1', 'forest_2', 'forest_0'],
+                text: ['<p>阿瑟穿越樹海，陰影交織。他步入森林深處，充滿神秘氛圍。</p>']
             },
             forest_2: {
+                type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
-                id: ['forest_2', 'forest_3', 'forest_1']
+                id: ['forest_2', 'forest_3', 'forest_1'],
+                text: ['<p>樹冠遮天蔽日，阿瑟迷失在綠色迷霧中，聽見微風低語。</p>']
             },
             forest_3: {
+                type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
-                id: ['forest_3', 'forest_4', 'forest_2']
+                id: ['forest_3', 'forest_4', 'forest_2'],
+                text: ['<p>他跨越涓流，聲音似幽靈呢喃。神奇植物綻放，為他指引道路。</p>']
             },
             forest_4: {
+                type: 'place',
                 link: ['在附近繞繞', '討伐魔物首領', '往回走'],
-                id: ['forest_4', 'Boss', 'forest_3']
+                id: ['forest_4', 'Boss', 'forest_3'],
+                text: ['<p>阿瑟穿越茂密的森林，樹影斑駁，微風輕拂。他感應到奇異的氛圍，知道那是強大魔物的氣息。心中猶豫，未知的挑戰即將面前。</p>']
+            },
+            woodSword: {
+                type: 'shop',
+                link: [''],
+                id: [''],
+                text: ['']
+            },
+            ironSword: {
+                type: 'shop',
+                link: [''],
+                id: [''],
+                text: ['']
+            },
+            fight: {
+                type: 'fight',
+                link: ['攻擊', '防禦', '逃跑'],
+                id: ['att', 'def', 'run'],
+                text: ['<p id="fight_monster">你遇到了 <span id="monster"></span>！</p><p id="fight_action"></p>']
+            },
+            att: {
+                type: 'action',
+                link: [''],
+                id: [''],
+                text: ['']
+            },
+            def: {
+                type: 'action',
+                link: [''],
+                id: [''],
+                text: ['']
+            },
+            run: {
+                type: 'action',
+                link: [''],
+                id: [''],
+                text: ['']
             }
         }
 
@@ -86,19 +134,21 @@
                 type: 'weapon',
                 name: '破爛的劍',
                 depiction: '這把劍曾經輝煌，但現在已經受損。雖然失去了一些光澤，但或許在冒險中仍能派上用場。',
-                attack: '1',
+                attack: 1,
             },
             woodSword: {
                 type: 'weapon',
                 name: '木劍',
                 depiction: '簡單而輕巧的木劍，是初次冒險的選擇。雖然不及鐵劍堅固，但足以應對一些較弱的敵人。',
-                attack: '3',
+                attack: 3,
+                shop_gold: 10,
             },
             ironSword: {
                 type: 'weapon',
-                name: '木劍',
-                depiction: '簡單而輕巧的木劍，是初次冒險的選擇。雖然不及鐵劍堅固，但足以應對一些較弱的敵人。',
-                attack: '5',
+                name: '鐵劍',
+                depiction: '一把堅固的鐵劍，刀刃鋒利，適合在冒險中應對各種怪物。它會是你在旅途中的可靠夥伴。',
+                attack: 5,
+                shop_gold: 30,
             },
             slime: {
                 type: 'food',
@@ -107,6 +157,16 @@
             },
         }
 
+        const Monster = [
+            {
+                id_name: 'slime',
+                name: '可愛史萊某',
+                heal: 5,
+                exp: 4,
+                gold: 4,
+            },
+        ]
+
         const skill = [
             {
                 name: '重擊',
@@ -114,39 +174,53 @@
             },
         ]
 
-        var player = {
-            attack: '',
-            effect: '',
-            weapon: '',
-            skill: '',
-            bag: '',
+        var Player = {
+            lv: 1,
+            hp: 50,
+            hpMax: 50,
+            exp: 0,
+            expMax: 5,
+            gold: 0,
+            attack: 0,
+            attackBase: 1,
+            weapon: 'wornSword',
+            bag: [],
         }
 
-        function into() {
+        var textPlayer = {
+            lv: '等級：',
+            hp: '血量：',
+            exp: '經驗值：',
+            gold: '金錢：',
+            attack: '攻擊力：',
+            weapon: '你拿著 ',
+            bag: '背包',
+        }
+
+
+
+        function init() {
             startShow()
             menuHide()
             contentHide()
             textShow()
             optsShow()
-            fightTextHide()
-            fightImgHide()
-            fightOptsHide()
+            menuPlayer()
         }
 
         // 將選項加上id和Class
-        for (let key in Opts) {
-            let link = '';//檢視選項作弊用
-            for (let i = 0; i < Opts[key].link.length; i++) {
-                // console.log(Opts[key].link[i]);
-                Opts[key].link[i] = `<span id="${Opts[key].id[i]}" class="link">(${i + 1}) ${Opts[key].link[i]}</span><br/>`
-                link += Opts[key].link[i];
+        for (let key in Event) {
+            let link = '';
+            for (let i = 0; i < Event[key].link.length; i++) {
+                // console.log(Event[key].link[i]);
+                Event[key].link[i] = `<span id="${Event[key].id[i]}" class="link">(${i + 1}) ${Event[key].link[i]}</span><br/>`
+                link += Event[key].link[i];
                 // document.getElementById('test').innerHTML += `${key}BG_${i}<br/>`
             }
-            document.getElementById('text').innerHTML += link;//檢視選項作弊用
         }
 
         // 初始化
-        into()
+        init()
 
         //  開始按鈕
         document.getElementById('startBnt').onclick = function () {
@@ -155,39 +229,129 @@
             // 顯示菜單跟遊戲內容
             menuShow();
             contentShow();
-            document.getElementById('text').innerHTML = Text.start;
-            document.getElementById('opts').innerHTML = Opts.start.link;
+            document.getElementById('text').innerHTML = Event.start.text;
+            document.getElementById('opts').innerHTML = Event.start.link;
             document.getElementById(`start2`).onclick = function () { textChange(this.id); }
         }
 
-        function textChange(item) {
-            document.getElementById('text').innerHTML = Text[item];
-            // 重置選項
-            document.getElementById('opts').innerHTML = '';
-            // 建構頁面選項
-            for (let i = 0; i < Opts[item].link.length; i++) {
-                document.getElementById('opts').innerHTML += Opts[item].link[i];
+        // 玩家菜單生成
+        function menuPlayer() {
+            for (key in textPlayer) {
+                document.getElementById('player').innerHTML += `<p id="${key}">${textPlayer[key]}<span id="${key}_data">${Player[key]}</span></p>`
             }
+            document.getElementById('player').innerHTML += `<ul id="bag_list"></ul>`
+            // document.getElementById('bag_list').innerHTML += 
 
-            // 點擊事件
-            for (let i = 0; i < Opts[item].link.length; i++) {
-                console.log(document.getElementById(`${Opts[item].id[i]}`))
-                document.getElementById(`${Opts[item].id[i]}`).onclick = function () { textChange(this.id); }
+            // 生成完再更新一次玩家菜單
+            updataPlayer()
+        }
+
+
+        // 界面更新
+        let placePrev = '';
+        let run = 0;
+        function textChange(event) {
+            let E = Event[event];
+
+            if (E.type == 'place') {
+                // 更換文本
+                document.getElementById('text').innerHTML = E.text;
+                // 重置選項
+                document.getElementById('opts').innerHTML = '';
+                // 建構頁面選項
+                for (let i = 0; i < E.link.length; i++) {
+                    document.getElementById('opts').innerHTML += E.link[i];
+                }
+                // 點擊事件
+                for (let i = 0; i < E.link.length; i++) {
+                    // console.log(document.getElementById(`${E.id[i]}`))
+                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+                }
+
+                // 記錄上一個場景
+                placePrev = event;
+
+                // 如果上一場戰鬥逃跑，就先不進入戰鬥
+                if (run == 0){
+                    // 如果進入到森林裡，就遇到戰鬥
+                    if (event == 'forest_0') {
+                        textChange('fight');
+                    }
+                }
+                run = 0;
+
+            } if (E.type == 'shop') {
+                document.getElementById('buy').innerHTML = `<p><span class="gold">你購買了${item[event].name}</span>，拿起來揮舞了幾下，感覺不錯。</p>`;
+            } if (E.type == 'fight') {
+                // 更換文本
+                document.getElementById('text').innerHTML = E.text;
+                // 重置選項
+                document.getElementById('opts').innerHTML = '';
+                // 建構頁面選項
+                for (let i = 0; i < E.link.length; i++) {
+                    document.getElementById('opts').innerHTML += E.link[i];
+                }
+                // 點擊事件
+                for (let i = 0; i < E.link.length; i++) {
+                    // console.log(document.getElementById(`${E.id[i]}`))
+                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+                }
+
+                let monster = Monster[0];
+                // 輸入文本怪物
+                document.getElementById(`monster`).innerHTML = monster.name;
+
+            } if (E.type == 'action') {
+                if (event == 'att') {
+                    console.log('att');
+                } if (event == 'def') {
+                    console.log('def');
+                } if (event == 'run') {
+                    run++;
+                    textChange(placePrev);
+                }
+            }
+            // 點擊任何連結後都更新一次玩家狀態
+            updataPlayer()
+        }
+
+        // 玩家狀態更新 
+        function updataPlayer() {
+            Player.attack = Number(item[`${Player.weapon}`].attack + Player.attackBase);
+            for (key in textPlayer) {
+                document.getElementById(`${key}_data`).innerHTML = `${Player[key]}`
+            }
+            document.getElementById(`hp_data`).innerHTML = `${Player.hp}／${Player.hpMax}`
+            document.getElementById(`exp_data`).innerHTML = `${Player.exp}／${Player.expMax}`
+            document.getElementById(`attack_data`).innerHTML = `${Player.attack}（${Player.attackBase} + ${item[`${Player.weapon}`].attack}）`
+            document.getElementById(`weapon_data`).innerHTML = `<abbr title="【攻擊力+${item[`${Player.weapon}`].attack}】${item[`${Player.weapon}`].depiction}">${item[`${Player.weapon}`].name}</abbr>`
+            // 背包生成
+            bag_list()
+        }
+
+        // 背包列表生成
+        function bag_list() {
+            document.getElementById('bag_list').innerHTML = '';
+            for (let i = 0; i < Player.bag.length; i++) {
+                console.log(Player.bag[i]);
+                document.getElementById('bag_list').innerHTML += `<li id="bag_${Player.bag[i]}">${item[`${Player.bag[i]}`].name}</ul>`
+
             }
         }
 
-        function optsChange(item) {
+        // 玩家升級
+        function level_up() {
 
         }
 
-        // 共用隱藏區
+        // 共用顯示隱藏區
         function startShow() {
             document.getElementById('start').style.display = 'block';
         }
         function startHide() {
             document.getElementById('start').style.display = 'none';
         }
-        console.log(document.getElementById('menu'));
+
         function menuShow() {
             document.getElementById('menu').style.display = 'block';
         }
@@ -216,40 +380,14 @@
             document.getElementById('opts').style.display = 'none';
         }
 
-        function fightTextShow() {
-            document.getElementById('fightText').style.display = 'block';
-        }
-        function fightTextHide() {
-            document.getElementById('fightText').style.display = 'none';
-        }
-
-        function fightImgShow() {
-            document.getElementById('fightImg').style.display = 'block';
-        }
-        function fightImgHide() {
-            document.getElementById('fightImg').style.display = 'none';
-        }
-
-        function fightOptsShow() {
-            document.getElementById('fightOpts').style.display = 'block';
-        }
-        function fightOptsHide() {
-            document.getElementById('fightOpts').style.display = 'none';
-        }
-
-
-
-
         // 職業 初心者 戰士 法師
         // 基本功能：攻擊、防禦、技能、逃跑
 
         // 技能
-        // 初：棍打
-        // 戰士：斬擊、突進
+        // 初：斬擊
+        // 戰士：猛擊、突進
         // 法師：火球、冰刃
         //
-
-
 
     </script>
 
