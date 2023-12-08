@@ -1,0 +1,49 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body {
+    color: #EEEEEE;
+    background-color: #2a2929;
+}
+
+#start {
+    margin-top: 200px;
+    text-align: center;
+}
+
+#main {
+    display: flex;
+}
+
+#menu{
+    width: 280px;
+    border:2px #EEEEEE solid;
+    border-radius: 12px;
+    background-color: rgba(255,255,255,0.1);
+    margin: 40px 12px;
+    padding: 12px;
+}
+
+#content {
+    width: 840px;
+    margin: 40px auto;
+    padding: 8px;
+}
+
+#text {
+    line-height: 1.5;
+}
+
+#text p {
+    margin-bottom: 28px;
+}
+
+.link {
+    cursor: pointer;
+    color: #5888dd;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
