@@ -22,7 +22,7 @@
         <div id="menu">
             <div id="player"></div>
         </div>
-        <div id="content">
+        <div id="content" class="fadeOut">
             <div id="text">文字區</div>
             <div id="img"></div>
             <div id="opts"></div>
@@ -247,32 +247,50 @@
         }
 
 
+
         // 界面更新
         let placePrev = '';
         let run = 0;
         function textChange(event) {
             let E = Event[event];
+            let content = document.getElementById('text');
+
+            // 添加逐漸影藏的動畫
+            content.classList.add('fadeOut');
+
 
             if (E.type == 'place') {
-                // 更換文本
-                document.getElementById('text').innerHTML = E.text;
-                // 重置選項
-                document.getElementById('opts').innerHTML = '';
-                // 建構頁面選項
-                for (let i = 0; i < E.link.length; i++) {
-                    document.getElementById('opts').innerHTML += E.link[i];
-                }
-                // 點擊事件
+
+                // 在动画结束时执行文本更改
+                setTimeout(function () {
+
+                    // 更換文本
+                    document.getElementById('text').innerHTML = E.text;
+
+                    // 重置選項
+                    document.getElementById('opts').innerHTML = '';
+
+                    // 建構頁面選項
+                    for (let i = 0; i < E.link.length; i++) {
+                        document.getElementById('opts').innerHTML += E.link[i];
+                    }
+
+                    // 點擊事件
                 for (let i = 0; i < E.link.length; i++) {
                     // console.log(document.getElementById(`${E.id[i]}`))
                     document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
                 }
 
+                    // 移除 CSS 类以触发渐显动画
+                    content.classList.remove("hidden");
+                }, 500); // 这里的时间应该和 CSS 中的动画持续时间一致
+                
+
                 // 記錄上一個場景
                 placePrev = event;
 
                 // 如果上一場戰鬥逃跑，就先不進入戰鬥
-                if (run == 0){
+                if (run == 0) {
                     // 如果進入到森林裡，就遇到戰鬥
                     if (event == 'forest_0') {
                         textChange('fight');

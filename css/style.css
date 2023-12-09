@@ -1,7 +1,8 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
+
 body {
     color: #EEEEEE;
     background-color: #1a1919;
@@ -13,7 +14,7 @@ body {
     margin-top: 200px;
     padding: 20px;
     text-align: center;
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     /* border: 1px #EEEEEE solid; */
 }
 
@@ -24,7 +25,7 @@ body {
     height: 60px;
     font-weight: bold;
     color: #EEEEEE;
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     border: 1px #EEEEEE solid;
 }
 
@@ -32,14 +33,14 @@ body {
     display: flex;
 }
 
-#menu{
+#menu {
     min-width: 280px;
-    border:1px #EEEEEE solid;
+    border: 1px #EEEEEE solid;
     border-radius: 12px;
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     margin: 40px 12px;
     padding: 12px;
-    height: 80vh; 
+    height: 80vh;
     text-align: center;
 }
 
@@ -60,6 +61,16 @@ body {
 
 #text p {
     margin-bottom: 28px;
+}
+
+/* 淡入淡出 */
+.fadeOut {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.fadeOutHidden {
+    opacity: 0;
 }
 
 .link {
