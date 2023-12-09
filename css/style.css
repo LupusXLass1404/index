@@ -66,10 +66,10 @@ body {
 /* 淡入淡出 */
 .fadeOut {
     opacity: 1;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.1s ease-out; /* 定义渐隐动画的持续时间和缓动函数 */
 }
 
-.fadeOutHidden {
+.hidden {
     opacity: 0;
 }
 
@@ -85,4 +85,8 @@ body {
 
 .gold {
     color: #ffd700;
+}
+
+.red {
+    color: #ec3535;
 }

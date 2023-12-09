@@ -29,7 +29,16 @@
         </div>
     </div>
 
+
+    <script src="https://unpkg.com/mousetrap"></script>
     <script>
+        
+        Mousetrap.bind('49', function () {
+            console.log('我是數字')
+        });
+        Mousetrap.bind('4', function () {
+            console.log('我是號碼')
+        });
 
         const OO = {
 
@@ -107,7 +116,7 @@
                 type: 'fight',
                 link: ['攻擊', '防禦', '逃跑'],
                 id: ['att', 'def', 'run'],
-                text: ['<p id="fight_monster">你遇到了 <span id="monster"></span>！</p><p id="fight_action"></p>']
+                text: ['<p id="fight_monster"><span class="red">你遇到了 <span id="monster"></span>！</span>你拿起了武器準備戰鬥。</p><p id="fight_action"></p><p id="monster_hp"></p>']
             },
             att: {
                 type: 'action',
@@ -157,11 +166,15 @@
             },
         }
 
+
+        let monster = '';
         const Monster = [
             {
                 id_name: 'slime',
                 name: '可愛史萊某',
-                heal: 5,
+                hp: 5,
+                hpMax: 5,
+                attack: 4,
                 exp: 4,
                 gold: 4,
             },
@@ -189,7 +202,7 @@
 
         var textPlayer = {
             lv: '等級：',
-            hp: '血量：',
+            hp: '生命值：',
             exp: '經驗值：',
             gold: '金錢：',
             attack: '攻擊力：',
@@ -253,17 +266,14 @@
         let run = 0;
         function textChange(event) {
             let E = Event[event];
-            let content = document.getElementById('text');
-
-            // 添加逐漸影藏的動畫
-            content.classList.add('fadeOut');
-
+            let content = document.getElementById('content');
 
             if (E.type == 'place') {
+                // 添加逐漸隱藏的動畫
+                content.classList.add('hidden');
 
                 // 在动画结束时执行文本更改
                 setTimeout(function () {
-
                     // 更換文本
                     document.getElementById('text').innerHTML = E.text;
 
@@ -276,31 +286,32 @@
                     }
 
                     // 點擊事件
-                for (let i = 0; i < E.link.length; i++) {
-                    // console.log(document.getElementById(`${E.id[i]}`))
-                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
-                }
+                    for (let i = 0; i < E.link.length; i++) {
+                        // console.log(document.getElementById(`${E.id[i]}`))
+                        document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+                    }
+
+                    // 記錄上一個場景
+                    placePrev = event;
+
+                    // 如果上一場戰鬥逃跑，就先不進入戰鬥
+                    if (run == 0) {
+                        // 如果進入到森林裡，就遇到戰鬥
+                        if (event == 'forest_0') {
+                            textChange('fight');
+                        }
+                    }
+                    // 重置逃跑判定
+                    run = 0;
 
                     // 移除 CSS 类以触发渐显动画
                     content.classList.remove("hidden");
-                }, 500); // 这里的时间应该和 CSS 中的动画持续时间一致
-                
-
-                // 記錄上一個場景
-                placePrev = event;
-
-                // 如果上一場戰鬥逃跑，就先不進入戰鬥
-                if (run == 0) {
-                    // 如果進入到森林裡，就遇到戰鬥
-                    if (event == 'forest_0') {
-                        textChange('fight');
-                    }
-                }
-                run = 0;
+                }, 100); // 这里的时间应该和 CSS 中的动画持续时间一致
 
             } if (E.type == 'shop') {
                 document.getElementById('buy').innerHTML = `<p><span class="gold">你購買了${item[event].name}</span>，拿起來揮舞了幾下，感覺不錯。</p>`;
             } if (E.type == 'fight') {
+
                 // 更換文本
                 document.getElementById('text').innerHTML = E.text;
                 // 重置選項
@@ -315,19 +326,43 @@
                     document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
                 }
 
-                let monster = Monster[0];
+                monster = Monster[0];
                 // 輸入文本怪物
                 document.getElementById(`monster`).innerHTML = monster.name;
+                // 顯示遭遇怪物的文本
+                document.getElementById('fight_monster').style.display = 'block';
+                // 生成怪物血量
+                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
 
             } if (E.type == 'action') {
+                // 隱藏遭遇怪物的文本
+                document.getElementById('fight_monster').style.display = 'none';
+
                 if (event == 'att') {
                     console.log('att');
+                    // 減少怪物血量
+                    monster.hp -= Player.attack;
+                    console.log(monster.hp -= Player.attack);
+
+                    // 減少玩家血量
+                    Player.hp -= monster.attack;
+
+                    // 攻擊文本
+                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。你對 ${monster.name} 造成了 ${Player.attack} 點傷害。<br/>${monster.name} 用身體撞擊了你，你損失了 ${`${monster.attack}`} 點生命值。`;
+
                 } if (event == 'def') {
-                    console.log('def');
+                    // 減少玩家血量
+                    Player.hp -= monster.attack / 2;
+
+                    // 防禦文本
+                    document.getElementById('fight_action').innerHTML = `你抵擋了 ${monster.name} 的攻擊。你損失了 ${`${monster.attack}` / 2} 點生命值。`;
+
                 } if (event == 'run') {
                     run++;
                     textChange(placePrev);
                 }
+                // 更新怪物血量
+                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
             }
             // 點擊任何連結後都更新一次玩家狀態
             updataPlayer()
