@@ -32,18 +32,6 @@
 
     <script src="https://unpkg.com/mousetrap"></script>
     <script>
-        
-        Mousetrap.bind('49', function () {
-            console.log('我是數字')
-        });
-        Mousetrap.bind('4', function () {
-            console.log('我是號碼')
-        });
-
-        const OO = {
-
-
-        }
 
         const Event = {
             start: {
@@ -266,6 +254,7 @@
         let run = 0;
         function textChange(event) {
             let E = Event[event];
+            console.log(Event[event]);
             let content = document.getElementById('content');
 
             if (E.type == 'place') {
@@ -285,10 +274,20 @@
                         document.getElementById('opts').innerHTML += E.link[i];
                     }
 
+                    // 重置鍵盤事件
+                    for (let i = 0; i < 9; i++) {
+                        Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
+                    }
+
                     // 點擊事件
                     for (let i = 0; i < E.link.length; i++) {
                         // console.log(document.getElementById(`${E.id[i]}`))
                         document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+
+                        Mousetrap.bind(`${i + 1}`, function () {
+                            console.log('keytest');
+                            textChange(E.id[i]);
+                        });
                     }
 
                     // 記錄上一個場景
@@ -320,10 +319,22 @@
                 for (let i = 0; i < E.link.length; i++) {
                     document.getElementById('opts').innerHTML += E.link[i];
                 }
+
+                // 重置鍵盤事件
+                for (let i = 0; i < 9; i++) {
+                        Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
+                    }
+                    
                 // 點擊事件
                 for (let i = 0; i < E.link.length; i++) {
                     // console.log(document.getElementById(`${E.id[i]}`))
                     document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+
+                    // 增加鍵盤事件
+                    Mousetrap.bind(`${i + 1}`, function () {
+                            console.log('keytest');
+                            textChange(E.id[i]);
+                        });
                 }
 
                 monster = Monster[0];
