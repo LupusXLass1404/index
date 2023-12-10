@@ -34,6 +34,9 @@ body {
 }
 
 #menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     min-width: 280px;
     border: 1px #EEEEEE solid;
     border-radius: 12px;
@@ -48,6 +51,49 @@ body {
     margin-bottom: 8px;
 }
 
+#bag_list {
+    height: 300px;
+    overflow-y: scroll;
+
+}
+
+#bag_list li {
+    display: flex;
+    justify-content: space-between;
+    border: 1px rgba(255, 255, 255, 0.5) solid;
+    padding: 4px 16px;
+    margin: 0 16px;
+    list-style: none;
+}
+
+#bag_list.use {
+
+    border: 1px solid;
+    padding: 4px;
+    list-style: none;
+
+}
+
+#file {
+    display: flex;
+    flex-direction: row;
+}
+
+.btn {
+    font-size: 18px;
+    width: 50%;
+    padding: 12px;
+    border: 1px rgba(255, 255, 255, 0.5) solid;
+    margin: 8px auto;
+}
+
+.btn:hover {
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px rgba(255, 255, 255, 1) solid;
+
+}
+
 #content {
     min-width: 250px;
     width: 840px;
@@ -55,18 +101,23 @@ body {
     padding: 8px;
 }
 
-#text {
+#text p,
+#tip p,
+#action p {
     line-height: 1.5;
 }
 
-#text p {
+#text p,
+#tip p,
+#action p {
     margin-bottom: 28px;
 }
 
 /* 淡入淡出 */
 .fadeOut {
     opacity: 1;
-    transition: opacity 0.1s ease-out; /* 定义渐隐动画的持续时间和缓动函数 */
+    transition: opacity 0.1s ease-out;
+    /* 定义渐隐动画的持续时间和缓动函数 */
 }
 
 .hidden {
@@ -89,4 +140,52 @@ body {
 
 .red {
     color: #ec3535;
+}
+
+.green {
+    color: #38b20a;
+}
+
+/* 存檔讀檔 */
+
+#saveFile,
+#readFile {
+    margin: 12px;
+}
+
+.file {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    border: 1px rgba(255, 255, 255, 0.5) solid;
+    padding: 20px;
+}
+
+.fileBtn {
+    padding: 8px;
+    border: 1px rgba(255, 255, 255, 0.5) solid;
+}
+
+.fileBtn:hover {
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px rgba(255, 255, 255, 1) solid;
+
+}
+
+/* 彈窗 */
+dialog {
+    width: 320px;
+    height: 420px;
+    color: #EEEEEE;
+    margin: 160px auto;
+    padding: 16px;
+    background-color: #444444;
+    border: 1px #EEEEEE solid;
+    text-align: center;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }

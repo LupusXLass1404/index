@@ -18,21 +18,42 @@
         <div id="test"></div>
     </div>
 
-    <div id="main">
+    <div id="main" style="display: none;">
         <div id="menu">
-            <div id="player"></div>
+            <div>
+                <div id="player"></div>
+            </div>
+            <div id="file">
+                <div id="saveOpen" class="btn">存檔</div>
+                <div id="readOpen" class="btn">讀檔</div>
+            </div>
         </div>
         <div id="content" class="fadeOut">
-            <div id="text">文字區</div>
+            <div id="action"></div>
+            <div id="text"></div>
+            <div id="tip"></div>
             <div id="img"></div>
             <div id="opts"></div>
         </div>
     </div>
 
+    <dialog id="saveInfo">
+        <h2>存檔</h2>
+        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。</p>
+        <ul id="saveFile"></ul>
+        <div id="saveClose" class="btn">關閉視窗</div>
+    </dialog>
+    <dialog id="readInfo">
+        <h2>讀檔</h2>
+        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。</p>
+        <ul id="readFile"></ul>
+        <div id="readClose" class="btn">關閉視窗</div>
+    </dialog>
 
     <script src="https://unpkg.com/mousetrap"></script>
     <script>
 
+        let fight_record = '';
         const Event = {
             start: {
                 type: 'place',
@@ -48,45 +69,65 @@
             },
             street: {
                 type: 'place',
-                link: ['森林', '商店'],
-                id: ['forest_0', 'shop'],
+                link: ['森林', '商店', '旅館', '隨便找個地方休息'],
+                id: ['forest_0', 'shop', 'hostel', 'street_rest'],
                 text: ['<p>阿瑟站在熙熙攘攘的街道，人群匆忙而熱情。</p>']
+            },
+            street_rest: {
+                type: 'event',
+                link: ['繼續'],
+                id: ['return'],
+                text: ['<p>阿瑟在街道旁找了一處安靜的角落休息。他坐在石階上，凝視著來來往往的人群。他感受著微風拂過，恢復體力。</p>'],
+                event: street_rest,
             },
             shop: {
                 type: 'place',
-                link: ['木劍｜10G｜+3攻擊力', '鐵劍｜30G｜+5攻擊力', '返回街道'],
+                link: ['購買 木劍', '購買 鐵劍', '返回街道'],
                 id: ['woodSword', 'ironSword', 'street'],
-                text: ['<p>充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>']
+                text: ['<p>阿瑟在商店內。商店內充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>']
+            },
+            hostel: {
+                type: 'place',
+                link: ['休息', '返回街道'],
+                id: ['hostel_rest', 'street'],
+                text: ['<p>阿瑟在旅館的大廳內。溫馨的床鋪，微弱的燭光。疲憊的冒險者在這裡找到安寧，夢想著明天的冒險。</p>']
+            },
+            hostel_rest: {
+                type: 'event',
+                link: ['起床'],
+                id: ['return'],
+                text: ['<p>阿瑟疲憊地進入旅館，躺在柔軟的床上。微弱的燭光映在他疲憊的臉上，逐漸進入夢鄉，為明日的冒險補充體力。</p>'],
+                event: hostel_rest,
             },
             forest_0: {
                 type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '回到街道'],
                 id: ['forest_0', 'forest_1', 'street'],
-                text: ['<p>阿瑟穿越森林，樹影婆娑，神秘氛圍籠罩。他警惕地前行。</p>']
+                text: ['<p>阿瑟在森林入口。你能在這裡看到城鎮的城牆。城鎮的熙熙攘攘在你身後，而前方是一片神秘的樹海。</p>']
             },
             forest_1: {
                 type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
                 id: ['forest_1', 'forest_2', 'forest_0'],
-                text: ['<p>阿瑟穿越樹海，陰影交織。他步入森林深處，充滿神秘氛圍。</p>']
+                text: ['<p>阿瑟在森林裡。樹木還很稀疏，你離城鎮還沒有很遠，城鎮的煙囪仍可遠眺。</p>']
             },
             forest_2: {
                 type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
                 id: ['forest_2', 'forest_3', 'forest_1'],
-                text: ['<p>樹冠遮天蔽日，阿瑟迷失在綠色迷霧中，聽見微風低語。</p>']
+                text: ['<p>阿瑟在森林裡。你被樹木巍峨包圍。陽光透過樹葉灑下，大自然的靜謐彷彿籠罩著他。</p>']
             },
             forest_3: {
                 type: 'place',
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '往回走'],
                 id: ['forest_3', 'forest_4', 'forest_2'],
-                text: ['<p>他跨越涓流，聲音似幽靈呢喃。神奇植物綻放，為他指引道路。</p>']
+                text: ['<p>阿瑟在深處。樹冠遮天蔽日，你迷失在綠色迷霧中，聽見微風低語。</p>']
             },
             forest_4: {
                 type: 'place',
                 link: ['在附近繞繞', '討伐魔物首領', '往回走'],
                 id: ['forest_4', 'Boss', 'forest_3'],
-                text: ['<p>阿瑟穿越茂密的森林，樹影斑駁，微風輕拂。他感應到奇異的氛圍，知道那是強大魔物的氣息。心中猶豫，未知的挑戰即將面前。</p>']
+                text: ['<p>阿瑟在森林最深處。樹木茂密，陽光難以穿透。他感應到奇異的氛圍，知道那是強大魔物的氣息。心中猶豫，未知的挑戰即將面前。</p>']
             },
             woodSword: {
                 type: 'shop',
@@ -106,6 +147,14 @@
                 id: ['att', 'def', 'run'],
                 text: ['<p id="fight_monster"><span class="red">你遇到了 <span id="monster"></span>！</span>你拿起了武器準備戰鬥。</p><p id="fight_action"></p><p id="monster_hp"></p>']
             },
+            fight_end: {
+                type: 'fight_end',
+                link: ['繼續'],
+                id: ['return'],
+                text: ['<p id="fight_action"><p id="result">。</p>']
+                // 你擊敗了怪物，得到了12點經驗值，和12個金幣。
+                // 你被怪物打敗了，你落荒而逃。
+            },
             att: {
                 type: 'action',
                 link: [''],
@@ -123,6 +172,18 @@
                 link: [''],
                 id: [''],
                 text: ['']
+            },
+            return: {
+                type: 'return',
+                link: [''],
+                id: [''],
+                text: ['']
+            },
+            Boss: {
+                type: 'fight',
+                link: ['攻擊', '防禦', '逃跑'],
+                id: ['att', 'def', 'run'],
+                text: ['<p id="fight_monster"><span class="red">你遇到了 <span id="monster"></span>！</span>你拿起了武器準備戰鬥。</p><p id="fight_action"></p><p id="monster_hp"></p>']
             }
         }
 
@@ -154,19 +215,74 @@
             },
         }
 
-
-        let monster = '';
-        const Monster = [
-            {
-                id_name: 'slime',
-                name: '可愛史萊某',
-                hp: 5,
-                hpMax: 5,
-                attack: 4,
-                exp: 4,
-                gold: 4,
+        let monster = {};
+        const Monster = {
+            slime_baby: {
+                name: '寶寶史萊姆',
+                hp: 1,
+                attack: 1,
+                exp: 5,
+                gold: 1,
+                loop: [],
             },
-        ]
+            // slime_green: {
+            //     name: '綠色史萊姆',
+            //     hp: ,
+
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_blue: {
+            //     name: '藍色史萊姆',
+            //     hp: ,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_purple: {
+            //     name: '紫色史萊姆',
+            //     hp: ,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_orange: {
+            //     name: '橘色史萊姆',
+            //     hp: ,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_red: {
+            //     name: '紅色史萊姆',
+            //     hp: ,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_pink: {
+            //     name: '粉色史萊姆',
+            //     hp: ,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // },
+            // slime_Boss: {
+            //     name: '史萊姆國王',
+            //     hp: 500,
+            //     attack: ,
+            //     exp: ,
+            //     gold: ,
+            //     loop: [],
+            // }
+        }
 
         const skill = [
             {
@@ -175,64 +291,61 @@
             },
         ]
 
+        var textPlayer = {
+            lv: '等級：',
+            hp: '生命值：',
+            exp: '經驗值：',
+            gold: '金幣：',
+            attack: '攻擊力：',
+            weapon: '你拿著 ',
+            bag: '背包',
+        }
+
         var Player = {
             lv: 1,
             hp: 50,
             hpMax: 50,
             exp: 0,
             expMax: 5,
-            gold: 0,
+            gold: 2000,
             attack: 0,
             attackBase: 1,
             weapon: 'wornSword',
-            bag: [],
+            bag: ['wornSword'],
         }
-
-        var textPlayer = {
-            lv: '等級：',
-            hp: '生命值：',
-            exp: '經驗值：',
-            gold: '金錢：',
-            attack: '攻擊力：',
-            weapon: '你拿著 ',
-            bag: '背包',
-        }
-
-
 
         function init() {
             startShow()
-            menuHide()
-            contentHide()
-            textShow()
-            optsShow()
+            mainHide()
             menuPlayer()
         }
+
+        init()
 
         // 將選項加上id和Class
         for (let key in Event) {
             let link = '';
             for (let i = 0; i < Event[key].link.length; i++) {
                 // console.log(Event[key].link[i]);
-                Event[key].link[i] = `<span id="${Event[key].id[i]}" class="link">(${i + 1}) ${Event[key].link[i]}</span><br/>`
+                Event[key].link[i] = `<span id="${Event[key].id[i]}" class="link">(${i + 1}) ${Event[key].link[i]}</span><span id="${Event[key].id[i]}_tip"></span><br/>`
                 link += Event[key].link[i];
                 // document.getElementById('test').innerHTML += `${key}BG_${i}<br/>`
             }
         }
 
-        // 初始化
-        init()
-
         //  開始按鈕
         document.getElementById('startBnt').onclick = function () {
             // 隱藏開始畫面
             startHide();
-            // 顯示菜單跟遊戲內容
-            menuShow();
-            contentShow();
+            // 顯示遊戲內容
+            mainShow();
+
             document.getElementById('text').innerHTML = Event.start.text;
             document.getElementById('opts').innerHTML = Event.start.link;
             document.getElementById(`start2`).onclick = function () { textChange(this.id); }
+            Mousetrap.bind('1', function () {
+                textChange('start2');
+            });
         }
 
         // 玩家菜單生成
@@ -247,22 +360,219 @@
             updataPlayer()
         }
 
-
-
-        // 界面更新
-        let placePrev = '';
-        let run = 0;
         function textChange(event) {
             let E = Event[event];
-            console.log(Event[event]);
-            let content = document.getElementById('content');
-
-            if (E.type == 'place') {
+            if (E.type == 'fight' || E.type == 'fight_end' || E.type == 'return' || eventChange == 1) {
+                textChange2(event)
+            } else {
+                updataPlayer()
                 // 添加逐漸隱藏的動畫
                 content.classList.add('hidden');
 
                 // 在动画结束时执行文本更改
                 setTimeout(function () {
+                    textChange2(event)
+
+                    // 移除 CSS 类以触发渐显动画
+                    content.classList.remove("hidden");
+
+                }, 100); // 这里的时间应该和 CSS 中的动画持续时间一致
+            }
+        }
+
+
+
+        // 界面更新
+        let placePrev = '';
+        let run = 0;
+        // 判定事件
+        let eventChange = 0;
+        function textChange2(event) {
+            let E = Event[event];
+            // console.log(Event[event]);
+            let content = document.getElementById('content');
+            document.getElementById('tip').innerHTML = '';
+            level_up();
+
+
+            if (E.type == 'place') {
+                // 如果玩家血量低於0，則重置為1;
+                if (Player.hp <= 0) {
+                    Player.hp = 1;
+                } else if (Player.hp < Player.hpMax) {
+                    // 自然恢復
+                    Player.hp++;
+                }
+
+                // 更換文本
+                document.getElementById('text').innerHTML = E.text;
+
+                // 重置選項
+                document.getElementById('opts').innerHTML = '';
+
+                // 建構頁面選項
+                for (let i = 0; i < E.link.length; i++) {
+                    document.getElementById('opts').innerHTML += E.link[i];
+                    if (Event[`${E.id[i]}`].type == "shop") {
+                        console.log(`${E.id}_tip`);
+                        document.getElementById(`${E.id[i]}_tip`).innerHTML = `｜${item[`${E.id[i]}`].shop_gold}G｜攻擊力 + ${item[`${E.id[i]}`].attack}`;
+                        // link: ['購買 木劍｜10G｜+3攻擊力', '購買 鐵劍｜30G｜+5攻擊力', '返回街道'],
+                    }
+                }
+
+                // 重置鍵盤事件
+                for (let i = 0; i < 9; i++) {
+                    Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
+                }
+
+                // 點擊事件
+                for (let i = 0; i < E.link.length; i++) {
+                    // console.log(document.getElementById(`${E.id[i]}`))
+                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+
+                    Mousetrap.bind(`${i + 1}`, function () {
+                        textChange(E.id[i]);
+                    });
+                }
+
+                // 記錄上一個場景
+                placePrev = event;
+
+                // 如果上一場戰鬥逃跑，就先不進入戰鬥
+                if (run == 0) {
+                    // 如果進入到森林裡，就遇到戰鬥
+                    if (event == 'forest_0') {
+                        textChange('fight');
+                    }
+                }
+                // 重置逃跑判定
+                run = 0;
+
+            } if (E.type == 'shop') {
+                if (Player.gold >= item[`${event}`].shop_gold) {
+                    Player.gold -= item[`${event}`].shop_gold
+                    Player.bag.push(event);
+                    document.getElementById('buy').innerHTML = `<p><span class="gold">你購買了${item[event].name}</span>，將其放入了背包。</p>`;
+                } else {
+                    document.getElementById('buy').innerHTML = `<span class="red">你買不起 ${item[event].name}。</span>`
+                }
+
+            } if (E.type == 'fight') {
+
+                // 更換文本
+                document.getElementById('text').innerHTML = E.text;
+                // 重置選項
+                document.getElementById('opts').innerHTML = '';
+                // 建構頁面選項
+                for (let i = 0; i < E.link.length; i++) {
+                    document.getElementById('opts').innerHTML += E.link[i];
+                }
+
+                // 重置鍵盤事件
+                for (let i = 0; i < 9; i++) {
+                    Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
+                }
+
+                // 點擊事件
+                for (let i = 0; i < E.link.length; i++) {
+                    // console.log(document.getElementById(`${E.id[i]}`))
+                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+
+                    // 增加鍵盤事件
+                    Mousetrap.bind(`${i + 1}`, function () {
+                        textChange(E.id[i]);
+                    });
+                }
+                for (let key in Monster.slime_baby) {
+                    monster[`${key}`] = Monster.slime_baby[key];
+                }
+                monster.hpMax = Monster.slime_baby.hp;
+
+                // 輸入文本怪物
+                document.getElementById(`monster`).innerHTML = monster.name;
+                // 顯示遭遇怪物的文本
+                document.getElementById('fight_monster').style.display = 'block';
+                // 生成怪物血量
+                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+
+            } if (E.type == 'action') {
+                // 隱藏遭遇怪物的文本
+                document.getElementById('fight_monster').style.display = 'none';
+
+                if (event == 'att') {
+                    // 減少怪物血量
+                    monster.hp -= Player.attack;
+
+                    // 減少玩家血量
+                    Player.hp -= monster.attack;
+
+                    // 攻擊文本
+                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</span><br/>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span>`;
+
+                } if (event == 'def') {
+                    // 減少玩家血量
+                    Player.hp -= monster.attack / 2;
+
+                    // 防禦文本
+                    document.getElementById('fight_action').innerHTML = `你抵擋了 ${monster.name} 的攻擊。你損失了 ${`${monster.attack}` / 2} 點生命值。`;
+
+                } if (event == 'run') {
+                    run++;
+                    contentHide()
+                    setTimeout(function () {
+                        contentShow()
+                    }, 100); 1
+                    textChange(placePrev);
+
+                }
+                // 記錄文本，等待戰鬥結果使用
+                fight_record = document.getElementById('fight_action').innerHTML;
+
+                // 更新怪物血量
+                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+                // 檢測戰鬥狀態、玩家是否死亡、怪物是否死亡
+                console.log('test');
+                fightCheck()
+            } if (E.type == 'fight_end') {
+
+                // 更換文本
+                document.getElementById('text').innerHTML = E.text;
+                // 重置選項
+                document.getElementById('opts').innerHTML = '';
+                // 建構頁面選項
+                for (let i = 0; i < E.link.length; i++) {
+                    document.getElementById('opts').innerHTML += E.link[i];
+                }
+
+                // 重置鍵盤事件
+                for (let i = 0; i < 9; i++) {
+                    Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
+                }
+
+                // 點擊事件
+                if (Player.hp <= 0) {
+                    document.getElementById(`return`).onclick = function () { textChange('street'); }
+
+                    // 增加鍵盤事件
+                    Mousetrap.bind(`1`, function () {
+                        textChange('street');
+                    });
+
+                } else {
+                    document.getElementById(`return`).onclick = function () { textChange(placePrev); }
+
+                    // 增加鍵盤事件
+                    Mousetrap.bind(`1`, function () {
+                        textChange(placePrev);
+                    });
+                }
+            } if (E.type == 'event') {
+                console.log(eventChange);
+
+                if (eventChange == 0) {
+                    E.event(event);
+                    updataPlayer()
+                } else {
                     // 更換文本
                     document.getElementById('text').innerHTML = E.text;
 
@@ -285,96 +595,15 @@
                         document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
 
                         Mousetrap.bind(`${i + 1}`, function () {
-                            console.log('keytest');
                             textChange(E.id[i]);
                         });
                     }
-
-                    // 記錄上一個場景
-                    placePrev = event;
-
-                    // 如果上一場戰鬥逃跑，就先不進入戰鬥
-                    if (run == 0) {
-                        // 如果進入到森林裡，就遇到戰鬥
-                        if (event == 'forest_0') {
-                            textChange('fight');
-                        }
-                    }
-                    // 重置逃跑判定
-                    run = 0;
-
-                    // 移除 CSS 类以触发渐显动画
-                    content.classList.remove("hidden");
-                }, 100); // 这里的时间应该和 CSS 中的动画持续时间一致
-
-            } if (E.type == 'shop') {
-                document.getElementById('buy').innerHTML = `<p><span class="gold">你購買了${item[event].name}</span>，拿起來揮舞了幾下，感覺不錯。</p>`;
-            } if (E.type == 'fight') {
-
-                // 更換文本
-                document.getElementById('text').innerHTML = E.text;
-                // 重置選項
-                document.getElementById('opts').innerHTML = '';
-                // 建構頁面選項
-                for (let i = 0; i < E.link.length; i++) {
-                    document.getElementById('opts').innerHTML += E.link[i];
+                    eventChange = 0;
                 }
-
-                // 重置鍵盤事件
-                for (let i = 0; i < 9; i++) {
-                        Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
-                    }
-                    
-                // 點擊事件
-                for (let i = 0; i < E.link.length; i++) {
-                    // console.log(document.getElementById(`${E.id[i]}`))
-                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
-
-                    // 增加鍵盤事件
-                    Mousetrap.bind(`${i + 1}`, function () {
-                            console.log('keytest');
-                            textChange(E.id[i]);
-                        });
-                }
-
-                monster = Monster[0];
-                // 輸入文本怪物
-                document.getElementById(`monster`).innerHTML = monster.name;
-                // 顯示遭遇怪物的文本
-                document.getElementById('fight_monster').style.display = 'block';
-                // 生成怪物血量
-                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
-
-            } if (E.type == 'action') {
-                // 隱藏遭遇怪物的文本
-                document.getElementById('fight_monster').style.display = 'none';
-
-                if (event == 'att') {
-                    console.log('att');
-                    // 減少怪物血量
-                    monster.hp -= Player.attack;
-                    console.log(monster.hp -= Player.attack);
-
-                    // 減少玩家血量
-                    Player.hp -= monster.attack;
-
-                    // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。你對 ${monster.name} 造成了 ${Player.attack} 點傷害。<br/>${monster.name} 用身體撞擊了你，你損失了 ${`${monster.attack}`} 點生命值。`;
-
-                } if (event == 'def') {
-                    // 減少玩家血量
-                    Player.hp -= monster.attack / 2;
-
-                    // 防禦文本
-                    document.getElementById('fight_action').innerHTML = `你抵擋了 ${monster.name} 的攻擊。你損失了 ${`${monster.attack}` / 2} 點生命值。`;
-
-                } if (event == 'run') {
-                    run++;
-                    textChange(placePrev);
-                }
-                // 更新怪物血量
-                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+            } if (E.type == 'return') {
+                textChange(placePrev);
             }
+
             // 點擊任何連結後都更新一次玩家狀態
             updataPlayer()
         }
@@ -382,31 +611,149 @@
         // 玩家狀態更新 
         function updataPlayer() {
             Player.attack = Number(item[`${Player.weapon}`].attack + Player.attackBase);
-            for (key in textPlayer) {
-                document.getElementById(`${key}_data`).innerHTML = `${Player[key]}`
-            }
+
+            document.getElementById(`lv_data`).innerHTML = `${Player.lv}`
             document.getElementById(`hp_data`).innerHTML = `${Player.hp}／${Player.hpMax}`
             document.getElementById(`exp_data`).innerHTML = `${Player.exp}／${Player.expMax}`
+            document.getElementById(`gold_data`).innerHTML = `${Player.gold} G`
             document.getElementById(`attack_data`).innerHTML = `${Player.attack}（${Player.attackBase} + ${item[`${Player.weapon}`].attack}）`
             document.getElementById(`weapon_data`).innerHTML = `<abbr title="【攻擊力+${item[`${Player.weapon}`].attack}】${item[`${Player.weapon}`].depiction}">${item[`${Player.weapon}`].name}</abbr>`
+            if (Player.hp >= Player.hpMax) {
+                Player.hp = Player.hpMax;
+            }
             // 背包生成
+            document.getElementById('bag').innerHTML = '背包';
             bag_list()
+
         }
 
         // 背包列表生成
         function bag_list() {
+            let bagCheck = [];
+            // 先清空背包
             document.getElementById('bag_list').innerHTML = '';
+            // 之後重新生成
             for (let i = 0; i < Player.bag.length; i++) {
-                console.log(Player.bag[i]);
-                document.getElementById('bag_list').innerHTML += `<li id="bag_${Player.bag[i]}">${item[`${Player.bag[i]}`].name}</ul>`
-
+                // console.log(Player.bag[i]);
+                document.getElementById('bag_list').innerHTML += `<li id="bag_${Player.bag[i]}" class="bag_item">${item[`${Player.bag[i]}`].name}<span id="item_data"></span><span id="use_${Player.bag[i]}" class="link bag_use"></span></li>`
             }
+            // 使用道具的按鈕
+            for (let i = 0; i < Player.bag.length; i++) {
+                let bagItem = document.getElementById(`use_${Player.bag[i]}`);
+                if (item[`${Player.bag[i]}`].type == 'weapon') {
+                    // 改變文字
+                    bagItem.innerHTML = '裝備';
+
+                    // 點擊事件
+                    bagItem.onclick = function () {
+                        Player.weapon = `${Player.bag[i]}`;
+                        updataPlayer()
+                    }
+                } else if (item[`${Player.bag[i]}`].type == 'food') {
+                    // 改變文字
+                    bagItem.innerHTML = '吃掉';
+                }
+            }
+        }
+
+        // 確認戰鬥狀態
+        function fightCheck() {
+
+            if (monster.hp <= 0) {
+                textChange('fight_end');
+                Player.exp += monster.exp;
+                Player.gold += monster.gold;
+
+                document.getElementById('result').innerHTML = `你擊敗了怪物，得到了${monster.exp}點經驗值，和${monster.gold}個金幣。`;
+
+            } if (Player.hp <= 0) {
+                textChange('fight_end');
+
+                document.getElementById('result').innerHTML = `<span class="red">你被怪物打敗了</span>，你路過的冒險者所救，你們一起回了城鎮。`;
+            }
+            run++;
+            document.getElementById('fight_action').innerHTML = fight_record;
+            level_up();
         }
 
         // 玩家升級
         function level_up() {
-
+            if (Player.exp >= Player.expMax) {
+                Player.exp -= Player.expMax;
+                Player.lv++;
+                Player.attackBase++;
+                Player.hpMax += 10;
+                Player.hp = Player.hpMax;
+                Player.expMax *= 2;
+            }
         }
+
+        // 事件區
+        function hostel_rest(event) {
+            console.log('旅館休息')
+            if (Player.gold >= 10) {
+                Player.gold -= 10;
+                Player.hp = Player.hpMax;
+                eventChange++;
+                textChange(event);
+            } else {
+                document.getElementById('tip').innerHTML = `<p><span class="red">你的錢不夠</span>。你只能<span class="gold">在街上隨便找個地方休息了。</span></p>`;
+            }
+        }
+
+        function street_rest(event) {
+            Player.hp += 10;
+            eventChange++;
+            textChange(event);
+        }
+
+
+
+
+
+
+
+
+
+
+        // 存檔與讀檔相關
+
+        document.getElementById('saveOpen').onclick = function() {
+            document.getElementById("saveInfo").showModal();
+        }
+        document.getElementById('saveClose').onclick = function() {
+            document.getElementById("saveInfo").close();
+        }
+        document.getElementById('readOpen').onclick = function() {
+            document.getElementById("readInfo").showModal();
+        }
+        document.getElementById('readClose').onclick = function() {
+            document.getElementById("readInfo").close();
+        }
+
+        for (let i = 1; i <= 3; i++){
+            document.getElementById('saveFile').innerHTML += `<li class="file">${i}<span id="save${i}" class="fileBtn">存檔</span></li>`;
+            document.getElementById('readFile').innerHTML += `<li class="file">${i}<span id="read${i}" class="fileBtn">讀檔</span></li>`;
+        }
+
+        for (let i = 1; i <= 3; i++){
+            document.getElementById(`save${i}`).onclick = function() { save(i) };
+            document.getElementById(`read${i}`).onclick = function() { read(i) };
+        }
+
+        function save(item){
+            console.log(item);
+        }
+
+        function read(item){
+            console.log(item);
+        }
+
+
+
+
+
+
 
         // 共用顯示隱藏區
         function startShow() {
@@ -416,11 +763,11 @@
             document.getElementById('start').style.display = 'none';
         }
 
-        function menuShow() {
-            document.getElementById('menu').style.display = 'block';
+        function mainShow() {
+            document.getElementById('main').style.display = 'flex';
         }
-        function menuHide() {
-            document.getElementById('menu').style.display = 'none';
+        function mainHide() {
+            document.getElementById('main').style.display = 'none';
         }
 
         function contentShow() {
@@ -428,20 +775,6 @@
         }
         function contentHide() {
             document.getElementById('content').style.display = 'none';
-        }
-
-        function textShow() {
-            document.getElementById('text').style.display = 'block';
-        }
-        function textHide() {
-            document.getElementById('text').style.display = 'none';
-        }
-
-        function optsShow() {
-            document.getElementById('opts').style.display = 'block';
-        }
-        function optsHide() {
-            document.getElementById('opts').style.display = 'none';
         }
 
         // 職業 初心者 戰士 法師
