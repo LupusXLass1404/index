@@ -308,8 +308,7 @@
             exp: 0,
             expMax: 5,
             gold: 2000,
-            attack: 0,
-            attackBase: 1,
+            attack: 1,
             weapon: 'wornSword',
             bag: ['wornSword'],
         }
@@ -609,20 +608,19 @@
 
         // 玩家狀態更新 
         function updataPlayer() {
-            Player.attack = Number(item[`${Player.weapon}`].attack + Player.attackBase);
 
-            document.getElementById(`lv_data`).innerHTML = `${Player.lv}`
-            document.getElementById(`hp_data`).innerHTML = `${Player.hp}／${Player.hpMax}`
-            document.getElementById(`exp_data`).innerHTML = `${Player.exp}／${Player.expMax}`
-            document.getElementById(`gold_data`).innerHTML = `${Player.gold} G`
-            document.getElementById(`attack_data`).innerHTML = `${Player.attack}（${Player.attackBase} + ${item[`${Player.weapon}`].attack}）`
-            document.getElementById(`weapon_data`).innerHTML = `<abbr title="【攻擊力+${item[`${Player.weapon}`].attack}】${item[`${Player.weapon}`].depiction}">${item[`${Player.weapon}`].name}</abbr>`
+            document.getElementById(`lv_data`).innerHTML = `${Player.lv}`;
+            document.getElementById(`hp_data`).innerHTML = `${Player.hp}／${Player.hpMax}`;
+            document.getElementById(`exp_data`).innerHTML = `${Player.exp}／${Player.expMax}`;
+            document.getElementById(`gold_data`).innerHTML = `${Player.gold} G`;
+            document.getElementById(`attack_data`).innerHTML = `${Player.attack + item[`${Player.weapon}`].attack}（${Player.attack} + ${item[`${Player.weapon}`].attack}）`;
+            document.getElementById(`weapon_data`).innerHTML = `<abbr title="【攻擊力+${item[`${Player.weapon}`].attack}】${item[`${Player.weapon}`].depiction}">${item[`${Player.weapon}`].name}</abbr>`;
             if (Player.hp >= Player.hpMax) {
                 Player.hp = Player.hpMax;
             }
             // 背包生成
             document.getElementById('bag').innerHTML = '背包';
-            bag_list()
+            bag_list();
 
         }
 
@@ -717,35 +715,56 @@
 
         // 存檔與讀檔相關
 
-        document.getElementById('saveOpen').onclick = function() {
+        document.getElementById('saveOpen').onclick = function () {
             document.getElementById("saveInfo").showModal();
         }
-        document.getElementById('saveClose').onclick = function() {
+        document.getElementById('saveClose').onclick = function () {
             document.getElementById("saveInfo").close();
         }
-        document.getElementById('readOpen').onclick = function() {
+        document.getElementById('readOpen').onclick = function () {
             document.getElementById("readInfo").showModal();
         }
-        document.getElementById('readClose').onclick = function() {
+        document.getElementById('readClose').onclick = function () {
             document.getElementById("readInfo").close();
         }
 
-        for (let i = 1; i <= 3; i++){
-            document.getElementById('saveFile').innerHTML += `<li class="file">${i}<span id="save${i}" class="fileBtn">存檔</span></li>`;
-            document.getElementById('readFile').innerHTML += `<li class="file">${i}<span id="read${i}" class="fileBtn">讀檔</span></li>`;
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('saveFile').innerHTML += `<li class="file"><span>${i}.<span id="player_save${i}"></span></span><span id="save${i}" class="fileBtn">存檔</span></li>`;
+            document.getElementById('readFile').innerHTML += `<li class="file"><span>${i}.<span id="player_read${i}"></span></span><span id="read${i}" class="fileBtn">讀檔</span></li>`;
         }
 
-        for (let i = 1; i <= 3; i++){
-            document.getElementById(`save${i}`).onclick = function() { save(i) };
-            document.getElementById(`read${i}`).onclick = function() { read(i) };
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`save${i}`).onclick = function () { save(i) };
+            document.getElementById(`read${i}`).onclick = function () { read(i) };
         }
 
-        function save(item){
-            console.log(item);
+
+
+
+        function save(item) {
+
+            localStorage.setItem(`Player${item}`, JSON.stringify(Player));
+
+            // console.log(item);
+            // for (let key in Player) {
+            //     if (key == 'bag') {
+            //         localStorage.setItem(`Player${item}_${key}`, JSON.stringify(Player[key]));
+            //     } else {
+            //         localStorage.setItem(`Player${item}_${key}`, Player[key]);
+            //     }
+            // }
+
+            document.getElementById(`player_save${item}`).innerHTML = `等級：${localStorage.getItem(`Player${item}_lv`)}`;
+            document.getElementById(`player_read${item}`).innerHTML = `等級：${localStorage.getItem(`Player${item}_lv`)}`;
+            // console.log(localStorage.getItem(`Player${item}`));
         }
 
-        function read(item){
-            console.log(item);
+        function read(item) {
+            // 載入存檔數據
+            Player = JSON.parse(localStorage.getItem(`Player${item}`));      
+
+            // 更新玩家狀態
+            updataPlayer()
         }
 
 
