@@ -401,7 +401,7 @@
                     Player.hp = 1;
                 } else if (Player.hp < Player.hpMax) {
                     // 自然恢復
-                    Player.hp++;
+                    // Player.hp++;
                 }
 
                 // 更換文本
@@ -531,7 +531,6 @@
                 // 更新怪物血量
                 document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
                 // 檢測戰鬥狀態、玩家是否死亡、怪物是否死亡
-                console.log('test');
                 fightCheck()
             } if (E.type == 'fight_end') {
 
