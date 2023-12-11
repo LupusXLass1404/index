@@ -83,17 +83,16 @@
             },
             weapon_shop: {
                 type: 'place',
-                link: ['購買', '購買 木劍', '購買 鐵劍', '返回街道'],
-                id: ['buy', 'woodSword', 'ironSword', 'street'],
-                text: ['<p>阿瑟在武器店。商店內充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>'],
-                item: ['woodSword', 'ironSword',],
+                link: ['購買', '返回街道'],
+                id: ['buy', 'street'],
+                text: ['<p>阿瑟在武器店。商店內充滿金屬香氣，陳列著各式刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p>'],
+                item: ['wood_sword', 'iron_sword', 'bronze_long_sword', 'steel_broad_sword'],
             },
             potion_shop: {
                 type: 'place',
                 link: ['購買', '返回街道'],
                 id: ['buy', 'street'],
-                text: ['<p>商店門前的牌子上掛著「即將開幕」的告示。透過窗戶，你可以看到裡面整潔的陳列架上空蕩蕩的，等待著新商品的陳列。</p><p><span class="red">這間店尚未開幕。</span></p>'],
-                // <p>阿瑟在藥水店內。一間充滿藥瓶香氣的小店，經營各種藥水與治癒道具。冒險者在這裡尋找康復與增益的良方</p>
+                text: ['<p>阿瑟在藥水店內。一間充滿藥瓶香氣的小店，經營各種藥水與治癒道具。冒險者在這裡尋找康復與增益的良方</p>'],
                 item: ['S_red_potion', 'M_red_potion', 'L_red_potion'],
             },
             hostel: {
@@ -143,23 +142,12 @@
             },
             forest_4: {
                 type: 'place',
-                link: ['在附近繞繞', '討伐魔物首領', '往回走'],
-                id: ['forest_4', 'Boss', 'forest_3'],
+                link: ['在附近繞繞', '往回走'],
+                id: ['forest_4', 'forest_3'],
                 text: ['<p>阿瑟在森林最深處。樹木茂密，陽光難以穿透。他感應到奇異的氛圍，知道那是強大魔物的氣息。心中猶豫，未知的挑戰即將面前。</p>'],
                 monster_name: ['slime_orange', 'slime_red'],
                 monster_rng: [30, 100],
-            },
-            woodSword: {
-                type: 'shop',
-                link: [''],
-                id: [''],
-                text: ['']
-            },
-            ironSword: {
-                type: 'shop',
-                link: [''],
-                id: [''],
-                text: ['']
+                //  '討伐魔物首領','Boss',
             },
             small_red_potion: {
                 type: 'shop',
@@ -220,25 +208,40 @@
         }
 
         const item = {
-            wornSword: {
+            worn_sword: {
                 type: 'weapon',
                 name: '破爛的劍',
                 depiction: '這把劍曾經輝煌，但現在已經受損。雖然失去了一些光澤，但或許在冒險中仍能派上用場。',
+                shop_gold: 5,
                 attack: 1,
             },
-            woodSword: {
+            wood_sword: {
                 type: 'weapon',
                 name: '木劍',
                 depiction: '簡單而輕巧的木劍，是初次冒險的選擇。雖然不及鐵劍堅固，但足以應對一些較弱的敵人。',
                 attack: 3,
-                shop_gold: 10,
+                shop_gold: 15,
             },
-            ironSword: {
+            iron_sword: {
                 type: 'weapon',
                 name: '鐵劍',
                 depiction: '一把堅固的鐵劍，刀刃鋒利，適合在冒險中應對各種怪物。它會是你在旅途中的可靠夥伴。',
                 attack: 5,
-                shop_gold: 30,
+                shop_gold: 40,
+            },
+            bronze_long_sword: {
+                type: 'weapon',
+                name: '青銅長劍',
+                depiction: '簡約而堅固，劍身呈深邃的青銅色。輕盈的揮舞中彰顯冒險者的力量。',
+                attack: 8,
+                shop_gold: 90,
+            },
+            steel_broad_sword: {
+                type: 'weapon',
+                name: '鋼製闊劍',
+                depiction: '威猛的鋼製闊劍，劍刃寬厚而鋒利。適合熟練戰士，能輕鬆應對不同的戰鬥場景。',
+                attack: 12,
+                shop_gold: 150,
             },
             slime: {
                 type: 'food',
@@ -374,8 +377,8 @@
             expMax: 5,
             gold: 2000,
             attack: 1,
-            weapon: 'wornSword',
-            bag: ['wornSword'],
+            weapon: 'worn_sword',
+            bag: ['worn_sword'],
         }
 
         function init() {
@@ -509,15 +512,6 @@
                 // 重置逃跑判定
                 run = 0;
 
-            } if (E.type == 'shop') {
-                if (Player.gold >= item[`${event}`].shop_gold) {
-                    Player.gold -= item[`${event}`].shop_gold
-                    Player.bag.push(event);
-                    document.getElementById('buy').innerHTML = `<p><span class="gold">你購買了${item[event].name}</span>，將其放入了背包。</p>`;
-                } else {
-                    document.getElementById('buy').innerHTML = `<span class="red">你買不起 ${item[event].name}。</span>`
-                }
-
             } if (E.type == 'buy') {
                 textChange3(event)
                 let itemArr = Event[placePrev].item;
@@ -525,12 +519,14 @@
 
                 for (let i = 0; i < itemArr.length; i++) {
                     let itemId = item[`${itemArr[i]}`];
-                    console.log(item[itemArr[i]].effect);
-                    let eff = Object.keys(item[itemArr[i]].effect);
 
-                    document.getElementById('UI').innerHTML += `<div class="buy_item"><span id="buy_${itemArr[i]}" class="link">${itemId.name}</span>｜${itemId.shop_gold}G｜${eff[0]}+${itemId.effect[`${eff[0]}`]}<br/>${itemId.depiction}</div>`;
+                    if (item[itemArr[i]].type == 'potion') {
+                        let eff = Object.keys(item[itemArr[i]].effect);
+                        document.getElementById('UI').innerHTML += `<div class="buy_item"><span id="buy_${itemArr[i]}" class="link">${itemId.name}</span>｜${itemId.shop_gold}G｜${eff[0]}+${itemId.effect[`${eff[0]}`]}<br/>${itemId.depiction}</div>`;
+                    } else if (item[itemArr[i]].type == 'weapon') {
+                        document.getElementById('UI').innerHTML += `<div class="buy_item"><span id="buy_${itemArr[i]}" class="link">${itemId.name}</span>｜${itemId.shop_gold}G｜攻擊力+${itemId.attack}<br/>${itemId.depiction}</div>`;
+                    }
                 }
-
 
                 // document.getElementById('tip').innerHTML = ''
                 for (let i = 0; i < itemArr.length; i++) {
@@ -550,14 +546,12 @@
 
                 // 判定怪物rng跟生成的rng
                 for (let i = 0; i < Event[placePrev].monster_name.length; i++) {
-                    console.log(Event[placePrev].monster_name[i]);
                     // baby <50 green < 100
                     if (Rng < Event[placePrev].monster_rng[i]) {
                         monster_fix = Event[placePrev].monster_name[i];
                         break;
                     }
                 }
-                console.log(Rng);
 
                 // 把遭遇怪物的數值輸入物件
                 for (let key in Monster[monster_fix]) {
@@ -696,6 +690,9 @@
 
         // 玩家狀態更新 
         function updataPlayer() {
+            if (Player.hp > Player.hpMax) {
+                Player.hp = Player.hpMax;
+            }
 
             document.getElementById(`lv_data`).innerHTML = `${Player.lv}`;
             document.getElementById(`hp_data`).innerHTML = `${Player.hp}／${Player.hpMax}`;
@@ -750,7 +747,7 @@
                     // 改變裝備敘述，將裝備的敘述加上能力值
                     document.getElementById(`abbr_${Player.bag[i]}`).title = `【攻擊力+${item[`${Player.bag[i]}`].attack}】${item[`${Player.bag[i]}`].depiction}`;
 
-                    // 改變文字
+                    // 道具互動按紐
                     bagItem.innerHTML = '裝備';
 
                     // 點擊事件
@@ -761,6 +758,28 @@
                 } else if (item[`${Player.bag[i]}`].type == 'food') {
                     // 改變文字
                     bagItem.innerHTML = '吃掉';
+
+                } else if (item[`${Player.bag[i]}`].type == 'potion') {
+                    let eff = Object.keys(item[`${Player.bag[i]}`].effect);
+                    // 增加能力敘述
+                    document.getElementById(`abbr_${Player.bag[i]}`).title = `【${eff[0]}+${item[`${Player.bag[i]}`].effect[`${eff[0]}`]}】${item[`${Player.bag[i]}`].depiction}`;
+
+                    // 道具互動按紐
+                    bagItem.innerHTML = '使用';
+
+                    // 點擊事件
+                    bagItem.onclick = function () {
+                        // 使用藥水後的效果
+                        Player[eff[0]] += item[`${Player.bag[i]}`].effect[eff[0]];
+                        // 刪除背包裡的一個藥水
+                        let del = Player.bag.indexOf(`${Player.bag[i]}`);
+
+                        if (del !== -1) {
+                            Player.bag.splice(del, 1);
+                        }
+
+                        updataPlayer()
+                    }
                 }
             }
         }
