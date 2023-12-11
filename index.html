@@ -32,7 +32,7 @@
             <div id="action"></div>
             <div id="text"></div>
             <div id="tip"></div>
-            <div id="img"></div>
+            <div id="img" class="shake-container"></div>
             <div id="opts"></div>
             <div id="UI"></div>
         </div>
@@ -203,7 +203,7 @@
                 type: 'fight',
                 link: ['攻擊', '防禦', '逃跑'],
                 id: ['att', 'def', 'run'],
-                text: ['<p id="fight_monster"><span class="red">你遇到了 <span id="monster"></span>！</span>你拿起了武器準備戰鬥。</p><p id="fight_action"></p><p id="monster_hp"></p>']
+                text: ['<p id="fight_monster"><span class="red">你遇到了 <span id="monster"></span>！</span>你拿起了武器準備戰鬥。</p><p id="fight_action"></p>']
             }
         }
 
@@ -277,6 +277,7 @@
         }
 
         let monster = {};
+        let monster_fix;
         const Monster = {
             slime_baby: {
                 name: '寶寶史萊姆',
@@ -449,6 +450,7 @@
 
         function textChange(event) {
             let E = Event[event];
+
             save_event = event;
             if (E.type == 'fight' || E.type == 'fight_end' || E.type == 'return' || eventChange == 1) {
                 textChange2(event)
@@ -542,7 +544,7 @@
                 // console.log(rng(100))
                 let Rng = rng(100);
                 // 儲存確定怪物的參數
-                let monster_fix;
+
 
                 // 判定怪物rng跟生成的rng
                 for (let i = 0; i < Event[placePrev].monster_name.length; i++) {
@@ -559,12 +561,15 @@
                 }
                 monster.hpMax = Monster[monster_fix].hp;
 
+
                 // 輸入文本怪物
                 document.getElementById(`monster`).innerHTML = monster.name;
                 // 顯示遭遇怪物的文本
                 document.getElementById('fight_monster').style.display = 'block';
                 // 生成怪物血量
-                document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+                document.getElementById('tip').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+                // 生成怪物圖片
+                document.getElementById('img').innerHTML = `<img id="monster_img" class="monster_img" src="img/${monster_fix}.png"></img>`;
 
             } if (E.type == 'action') {
                 // 隱藏存檔按鈕
@@ -581,7 +586,7 @@
                     Player.hp -= monster.attack;
 
                     // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</span><br/>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span>`;
+                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</span>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span>`;
 
                 } if (event == 'def') {
                     // 減少玩家血量
@@ -643,7 +648,6 @@
                     });
                 }
             } if (E.type == 'event') {
-                console.log(eventChange);
 
                 if (eventChange == 0) {
                     E.event(event);
@@ -670,7 +674,6 @@
             for (let i = 0; i < E.link.length; i++) {
                 document.getElementById('opts').innerHTML += E.link[i];
             }
-
             // 重置鍵盤事件
             for (let i = 0; i < 9; i++) {
                 Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
@@ -679,14 +682,39 @@
             // 點擊事件
             for (let i = 0; i < E.link.length; i++) {
                 // console.log(document.getElementById(`${E.id[i]}`))
-                document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+                document.getElementById(`${E.id[i]}`).onclick = function () {
+                    if (this.id == 'att') {
+                        // 開始搖
+                        startShake()
 
+                        setTimeout(function () {
+                            stopShake();
+                            console.log(this.id)
+                            textChange(E.id[i]);
+                        }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
+
+                    } else {
+                        textChange(this.id);
+                    }
+                }
                 // 增加鍵盤事件
                 Mousetrap.bind(`${i + 1}`, function () {
-                    textChange(E.id[i]);
+                    if (E.id[i] == 'att') {
+                        // 開始搖
+                        startShake()
+
+                        setTimeout(function () {
+                            stopShake();
+                            textChange(E.id[i]);
+                        }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
+
+                    } else {
+                        textChange(E.id[i]);
+                    }
                 });
             }
         }
+
 
         // 玩家狀態更新 
         function updataPlayer() {
@@ -790,17 +818,21 @@
                 textChange('fight_end');
 
                 document.getElementById('result').innerHTML = `<span class="red">你被怪物打敗了</span>，你路過的冒險者所救，你們一起回了城鎮。`;
+                // 清空怪物圖片
+                document.getElementById('img').innerHTML = '';
             } else if (monster.hp <= 0) {
                 textChange('fight_end');
                 Player.exp += monster.exp;
                 Player.gold += monster.gold;
 
                 document.getElementById('result').innerHTML = `你擊敗了怪物，得到了${monster.exp}點經驗值，和${monster.gold}個金幣。`;
-
+                // 清空怪物圖片
+                document.getElementById('img').innerHTML = '';
             }
             run++;
             document.getElementById('fight_action').innerHTML = fight_record;
             level_up();
+
         }
 
         // 玩家升級
@@ -856,7 +888,25 @@
             textChange(event);
         }
 
+        // 圖片抖動
+        function startShake() {
+            // 更換圖片
+            document.getElementById('img').innerHTML = `<img id="monster_img" class="monster_img" src="img/${monster_fix}_2.png"></img>`;
+            // 添加抖動的 CSS 類別
+            document.getElementById('monster_img').classList.add('shake-image');
 
+            // 在一段時間後移除抖動的 CSS 類別
+            setTimeout(function () {
+                stopShake();
+            }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
+        }
+
+        function stopShake() {
+            // 更換圖片
+            document.getElementById('img').innerHTML = `<img id="monster_img" class="monster_img" src="img/${monster_fix}.png"></img>`;
+            // 移除抖動的 CSS 類別
+            document.getElementById('monster_img').classList.remove('shake-image');
+        }
 
 
 
