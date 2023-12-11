@@ -34,18 +34,19 @@
             <div id="tip"></div>
             <div id="img"></div>
             <div id="opts"></div>
+            <div id="UI"></div>
         </div>
     </div>
 
     <dialog id="saveInfo">
         <h2>存檔</h2>
-        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。<br /><span class="red">暫時只有儲存角色數值的功能</span></p>
+        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。<br /><span class="red">暫時只有儲存角色數值的功能<br />且戰鬥中無法使用存檔功能</span></p>
         <ul id="saveFile"></ul>
         <div id="saveClose" class="btn">關閉視窗</div>
     </dialog>
     <dialog id="readInfo">
         <h2>讀檔</h2>
-        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。<br /><span class="red">暫時只有儲存角色數值的功能</span></p>
+        <p>存檔存於瀏覽器的緩存之中，如果清除瀏覽器資料會導致存檔丟失。<br /><span class="red">暫時只有儲存角色數值的功能<br />且戰鬥中無法使用存檔功能</span></p>
         <ul id="readFile"></ul>
         <div id="readClose" class="btn">關閉視窗</div>
     </dialog>
@@ -82,16 +83,18 @@
             },
             weapon_shop: {
                 type: 'place',
-                link: ['購買 木劍', '購買 鐵劍', '返回街道'],
-                id: ['woodSword', 'ironSword', 'street'],
-                text: ['<p>阿瑟在武器店。商店內充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>']
+                link: ['購買', '購買 木劍', '購買 鐵劍', '返回街道'],
+                id: ['buy', 'woodSword', 'ironSword', 'street'],
+                text: ['<p>阿瑟在武器店。商店內充滿金屬香氣，陳列著刀劍、魔法杖，各種武器應有盡有。冒險者在這裡尋找力量的象徵。</p><p id="buy"></p>'],
+                item: ['woodSword', 'ironSword',],
             },
             potion_shop: {
                 type: 'place',
-                link: ['返回街道'],
-                id: ['street'],
-                text: ['<p>商店門前的牌子上掛著「即將開幕」的告示。透過窗戶，你可以看到裡面整潔的陳列架上空蕩蕩的，等待著新商品的陳列。</p><p><span class="red">這間店尚未開幕。</span></p>']
+                link: ['購買', '返回街道'],
+                id: ['buy', 'street'],
+                text: ['<p>商店門前的牌子上掛著「即將開幕」的告示。透過窗戶，你可以看到裡面整潔的陳列架上空蕩蕩的，等待著新商品的陳列。</p><p><span class="red">這間店尚未開幕。</span></p>'],
                 // <p>阿瑟在藥水店內。一間充滿藥瓶香氣的小店，經營各種藥水與治癒道具。冒險者在這裡尋找康復與增益的良方</p>
+                item: ['S_red_potion', 'M_red_potion', 'L_red_potion'],
             },
             hostel: {
                 type: 'place',
@@ -196,6 +199,12 @@
                 id: [''],
                 text: ['']
             },
+            buy: {
+                type: 'buy',
+                link: ['返回'],
+                id: ['return'],
+                text: ['<p>你要購買什麼？</p>']
+            },
             return: {
                 type: 'return',
                 link: [''],
@@ -241,13 +250,27 @@
                 name: '寶寶史萊姆的奶嘴',
                 depiction: '一個柔軟的、可咬的奶嘴，專為人類的小寶寶而設計。但為什麼史萊姆會有這種東西呢？',
             },
-            small_red_potion: {
+            S_red_potion: {
                 type: 'potion',
                 name: '小瓶紅色藥水',
-                depiction: '閃爍著治癒之光的紅色液體。飲用後，立即恢復失去的生命力，帶來煥然一新的感覺，是冒險者的急救利器。',
+                depiction: '小瓶裝的紅色藥水。適合快速急救。恢復少量生命，是冒險旅途中的便攜夥伴。',
                 shop_gold: 5,
                 effect: { hp: 50, },
-            }
+            },
+            M_red_potion: {
+                type: 'potion',
+                name: '中瓶紅色藥水',
+                depiction: '中瓶裝的紅色藥水。提供較大幅度的生命回復，是長時間冒險的理想選擇。',
+                shop_gold: 15,
+                effect: { hp: 200, },
+            },
+            L_red_potion: {
+                type: 'potion',
+                name: '大瓶紅色藥水',
+                depiction: '大瓶裝的紅色藥水。適合快速急救。能在極短時間內回復大量生命，是面對強敵時的生死關鍵。',
+                shop_gold: 30,
+                effect: { hp: 500, },
+            },
         }
 
         let monster = {};
@@ -349,7 +372,7 @@
             hpMax: 50,
             exp: 0,
             expMax: 5,
-            gold: 0,
+            gold: 2000,
             attack: 1,
             weapon: 'wornSword',
             bag: ['wornSword'],
@@ -451,10 +474,12 @@
         // 判定事件
         let eventChange = 0;
         function textChange2(event) {
+            fileShow()
             let E = Event[event];
             // console.log(Event[event]);
             let content = document.getElementById('content');
             document.getElementById('tip').innerHTML = '';
+            document.getElementById('UI').innerHTML = '';
             level_up();
 
 
@@ -467,43 +492,7 @@
                     // Player.hp++;
                 }
 
-                // 更換文本
-                document.getElementById('text').innerHTML = E.text;
-
-                // 重置選項
-                document.getElementById('opts').innerHTML = '';
-
-                // 建構頁面選項
-                for (let i = 0; i < E.link.length; i++) {
-                    document.getElementById('opts').innerHTML += E.link[i];
-                    if (Event[`${E.id[i]}`].type == "shop") {
-                        if (item[`${E.id[i]}`].type == 'weapon') {
-                            document.getElementById(`${E.id[i]}_tip`).innerHTML = `｜${item[`${E.id[i]}`].shop_gold}G｜攻擊力 + ${item[`${E.id[i]}`].attack}`;
-                        }
-                        // 藥水店
-                        // else if (item[`${E.id[i]}`].type == 'potion') {
-                        //     let potion_eff;
-                        //     potion_eff = Object.keys(item.event);
-                        //     console.log(`${potion_eff[0]}`);
-                        //     document.getElementById(`${E.id[i]}_tip`).innerHTML = `｜${item[`${E.id[i]}`].shop_gold}G｜${potion_eff[0]} + }`;
-                        // }
-                    }
-                }
-
-                // 重置鍵盤事件
-                for (let i = 0; i < 9; i++) {
-                    Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
-                }
-
-                // 點擊事件
-                for (let i = 0; i < E.link.length; i++) {
-                    // console.log(document.getElementById(`${E.id[i]}`))
-                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
-
-                    Mousetrap.bind(`${i + 1}`, function () {
-                        textChange(E.id[i]);
-                    });
-                }
+                textChange3(event)
 
                 // 記錄上一個場景
                 placePrev = event;
@@ -529,32 +518,29 @@
                     document.getElementById('buy').innerHTML = `<span class="red">你買不起 ${item[event].name}。</span>`
                 }
 
+            } if (E.type == 'buy') {
+                textChange3(event)
+                let itemArr = Event[placePrev].item;
+
+
+                for (let i = 0; i < itemArr.length; i++) {
+                    let itemId = item[`${itemArr[i]}`];
+                    console.log(item[itemArr[i]].effect);
+                    let eff = Object.keys(item[itemArr[i]].effect);
+
+                    document.getElementById('UI').innerHTML += `<div class="buy_item"><span id="buy_${itemArr[i]}" class="link">${itemId.name}</span>｜${itemId.shop_gold}G｜${eff[0]}+${itemId.effect[`${eff[0]}`]}<br/>${itemId.depiction}</div>`;
+                }
+
+
+                // document.getElementById('tip').innerHTML = ''
+                for (let i = 0; i < itemArr.length; i++) {
+                    document.getElementById(`buy_${itemArr[i]}`).onclick = function () { buy(itemArr[i]); }
+                }
+
             } if (E.type == 'fight') {
-
-                // 更換文本
-                document.getElementById('text').innerHTML = E.text;
-                // 重置選項
-                document.getElementById('opts').innerHTML = '';
-                // 建構頁面選項
-                for (let i = 0; i < E.link.length; i++) {
-                    document.getElementById('opts').innerHTML += E.link[i];
-                }
-
-                // 重置鍵盤事件
-                for (let i = 0; i < 9; i++) {
-                    Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
-                }
-
-                // 點擊事件
-                for (let i = 0; i < E.link.length; i++) {
-                    // console.log(document.getElementById(`${E.id[i]}`))
-                    document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
-
-                    // 增加鍵盤事件
-                    Mousetrap.bind(`${i + 1}`, function () {
-                        textChange(E.id[i]);
-                    });
-                }
+                // 隱藏存檔按鈕
+                fileHide()
+                textChange3(event)
 
                 // 生成1~100的隨機亂數
                 // console.log(rng(100))
@@ -587,6 +573,8 @@
                 document.getElementById('monster_hp').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
 
             } if (E.type == 'action') {
+                // 隱藏存檔按鈕
+                fileHide()
                 // 隱藏遭遇怪物的文本
                 document.getElementById('fight_monster').style.display = 'none';
                 let attr = Player.attack + item[`${Player.weapon}`].attack;
@@ -627,6 +615,7 @@
                 // 檢測戰鬥狀態、玩家是否死亡、怪物是否死亡
                 fightCheck()
             } if (E.type == 'fight_end') {
+                fileHide()
 
                 // 更換文本
                 document.getElementById('text').innerHTML = E.text;
@@ -666,31 +655,7 @@
                     E.event(event);
                     updataPlayer()
                 } else {
-                    // 更換文本
-                    document.getElementById('text').innerHTML = E.text;
-
-                    // 重置選項
-                    document.getElementById('opts').innerHTML = '';
-
-                    // 建構頁面選項
-                    for (let i = 0; i < E.link.length; i++) {
-                        document.getElementById('opts').innerHTML += E.link[i];
-                    }
-
-                    // 重置鍵盤事件
-                    for (let i = 0; i < 9; i++) {
-                        Mousetrap.bind(`${i + 1}`, function () { console.log('被重置') });
-                    }
-
-                    // 點擊事件
-                    for (let i = 0; i < E.link.length; i++) {
-                        // console.log(document.getElementById(`${E.id[i]}`))
-                        document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
-
-                        Mousetrap.bind(`${i + 1}`, function () {
-                            textChange(E.id[i]);
-                        });
-                    }
+                    textChange3(event)
                     eventChange = 0;
                 }
             } if (E.type == 'return') {
@@ -699,6 +664,34 @@
 
             // 點擊任何連結後都更新一次玩家狀態
             updataPlayer()
+        }
+
+        function textChange3(event) {
+            let E = Event[event];
+            // 更換文本
+            document.getElementById('text').innerHTML = E.text;
+            // 重置選項
+            document.getElementById('opts').innerHTML = '';
+            // 建構頁面選項
+            for (let i = 0; i < E.link.length; i++) {
+                document.getElementById('opts').innerHTML += E.link[i];
+            }
+
+            // 重置鍵盤事件
+            for (let i = 0; i < 9; i++) {
+                Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
+            }
+
+            // 點擊事件
+            for (let i = 0; i < E.link.length; i++) {
+                // console.log(document.getElementById(`${E.id[i]}`))
+                document.getElementById(`${E.id[i]}`).onclick = function () { textChange(this.id); }
+
+                // 增加鍵盤事件
+                Mousetrap.bind(`${i + 1}`, function () {
+                    textChange(E.id[i]);
+                });
+            }
         }
 
         // 玩家狀態更新 
@@ -805,6 +798,24 @@
                     level_up()
                 }
             }
+        }
+
+        // 購買物品 
+        function buy(itemId) {
+            if (Player.gold >= item[`${itemId}`].shop_gold) {
+                // 錢夠，扣除錢
+                Player.gold -= item[`${itemId}`].shop_gold
+                // 將物品推入背包的陣列
+                Player.bag.push(itemId);
+                // 提示玩家購買了物品
+                document.getElementById('tip').innerHTML = `<p><span class="gold">你購買了${item[itemId].name}</span>，將其放入了背包。</p>`;
+                // 更新玩家菜單使物品出現在背包中
+                updataPlayer()
+            } else {
+                // 錢不夠，提示玩家錢不夠
+                document.getElementById('tip').innerHTML = `<span class="red">你買不起 ${item[itemId].name}。</span>`
+            }
+
         }
 
         // 事件區
@@ -917,6 +928,13 @@
         }
         function contentHide() {
             document.getElementById('content').style.display = 'none';
+        }
+
+        function fileShow() {
+            document.getElementById('file').style.display = 'block';
+        }
+        function fileHide() {
+            document.getElementById('file').style.display = 'none';
         }
 
         // 職業 初心者 戰士 法師
