@@ -54,20 +54,20 @@ body {
 #bag_list {
     height: 300px;
     overflow-y: scroll;
-
+    overflow-x: hidden;
 }
 
 #bag_list li {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border: 1px rgba(255, 255, 255, 0.5) solid;
-    padding: 4px 16px;
+    padding: 4px 12px;
     margin: 0 16px;
     list-style: none;
 }
 
 #bag_list.use {
-
     border: 1px solid;
     padding: 4px;
     list-style: none;
@@ -188,4 +188,23 @@ dialog {
 
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* bar */
+.bar_container {
+    border: 1px #EEEEEE solid;
+    height: 12px;
+    margin: 0 16px 20px;
+    overflow: hidden;
+}
+.bar {
+    height: 100%;
+}
+#hp_bar {
+    width: 50%;
+    background-color: #DD5555;
+}
+#exp_bar {
+    width: 50%;
+    background-color: #98cc41;
 }
