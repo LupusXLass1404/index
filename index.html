@@ -601,7 +601,7 @@
                     let arrText = ['你舉劍衝向怪物，','你揮動長劍，直取怪物要害。','你猛然揮劍，'];
                     
                     // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `<p>${arrText[rng0(3)]}<span class="green">對 ${monster.name} 造成了 ${Player.attack} 點傷害。</p><p></span>${monster.name} 撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
+                    document.getElementById('fight_action').innerHTML = `<p>${arrText[rng0(3)]}<span class="green">對 ${monster.name} 造成了 ${attr} 點傷害。</p><p></span>${monster.name} 撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
 
                 } if (event == 'def') {
                     // 減少玩家血量
