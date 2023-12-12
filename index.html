@@ -171,7 +171,7 @@
                 type: 'action',
                 link: [''],
                 id: [''],
-                text: ['']
+                text: [''],
             },
             def: {
                 type: 'action',
@@ -447,11 +447,11 @@
         }
 
         function textChange(event) {
-            let E = Event[event];
+            let E = Event[event]
 
             save_event = event;
             if (E.type == 'fight' || E.type == 'fight_end' || E.type == 'return' || eventChange == 1) {
-                textChange2(event)
+                eventAction(event)
             } else {
                 updataPlayer()
                 // 添加逐漸隱藏的動畫
@@ -459,7 +459,7 @@
 
                 // 在动画结束时执行文本更改
                 setTimeout(function () {
-                    textChange2(event)
+                    eventAction(event)
 
                     // 移除 CSS 类以触发渐显动画
                     content.classList.remove("hidden");
@@ -476,12 +476,14 @@
         let run = 0;
         // 判定事件
         let eventChange = 0;
-        function textChange2(event) {
+        function eventAction(event) {
+
+
             fileShow()
             let E = Event[event];
             // console.log(Event[event]);
             let content = document.getElementById('content');
-            
+
             document.getElementById('tip').innerHTML = '';
             document.getElementById('UI').innerHTML = '';
             level_up();
@@ -496,7 +498,7 @@
                     // Player.hp++;
                 }
 
-                textChange3(event)
+                onclickBtn(event)
 
                 // 記錄上一個場景
                 placePrev = event;
@@ -518,7 +520,7 @@
                 run = 0;
 
             } if (E.type == 'buy') {
-                textChange3(event)
+                onclickBtn(event)
                 let itemArr = Event[placePrev].item;
 
 
@@ -541,7 +543,7 @@
             } if (E.type == 'fight') {
                 // 隱藏存檔按鈕
                 fileHide()
-                textChange3(event)
+                onclickBtn(event)
 
                 // 生成1~100的隨機亂數
                 // console.log(rng(100))
@@ -575,6 +577,7 @@
                 loadimg(`img/${monster_fix}.png`);
 
             } if (E.type == 'action') {
+
                 // 隱藏存檔按鈕
                 fileHide()
                 // 隱藏遭遇怪物的文本
@@ -587,9 +590,11 @@
 
                     // 減少玩家血量
                     Player.hp -= monster.attack;
-
+                    
+                    let arrText = ['你舉劍衝向怪物，','你揮動長劍，直取怪物要害。','你猛然揮劍，'];
+                    
                     // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `<p>你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</p><p></span>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
+                    document.getElementById('fight_action').innerHTML = `<p>${arrText[rng0(3)]}<span class="green">對 ${monster.name} 造成了 ${Player.attack} 點傷害。</p><p></span>${monster.name} 撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
 
                 } if (event == 'def') {
                     // 減少玩家血量
@@ -609,7 +614,7 @@
                     // 清空怪物圖片
                     document.getElementById('img').innerHTML = '';
                     textChange(placePrev);
-                    document.getElementById('action').innerHTML ='<p><span class="gold">你逃跑了。</span></p>';
+                    document.getElementById('action').innerHTML = '<p><span class="gold">你逃跑了。</span></p>';
                 }
                 // 記錄文本，等待戰鬥結果使用
                 fight_record = document.getElementById('fight_action').innerHTML;
@@ -658,7 +663,7 @@
                     E.event(event);
                     updataPlayer()
                 } else {
-                    textChange3(event)
+                    onclickBtn(event)
                     eventChange = 0;
                 }
             } if (E.type == 'return') {
@@ -669,20 +674,22 @@
             updataPlayer()
         }
 
-        function textChange3(event) {
+        function onclickBtn(event) {
             let E = Event[event];
             // 更換文本
             document.getElementById('text').innerHTML = E.text;
             // 重置選項
             document.getElementById('opts').innerHTML = '';
-            // 建構頁面選項
-            for (let i = 0; i < E.link.length; i++) {
-                document.getElementById('opts').innerHTML += E.link[i];
-            }
             // 重置鍵盤事件
             for (let i = 0; i < 9; i++) {
                 Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
             }
+
+            // 建構頁面選項
+            for (let i = 0; i < E.link.length; i++) {
+                document.getElementById('opts').innerHTML += E.link[i];
+            }
+
 
 
             // 點擊事件
@@ -690,13 +697,15 @@
                 // console.log(document.getElementById(`${E.id[i]}`))
                 document.getElementById(`${E.id[i]}`).onclick = function () {
                     if (this.id == 'att') {
-                        // 開始搖
+
+                        // 圖片開始晃動
                         startShake()
 
+                        // 時間到後圖片停止晃動，並改變文字
                         setTimeout(function () {
                             stopShake();
                             textChange(E.id[i]);
-                            textChange3(event)
+                            onclickBtn(event);
                         }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
 
                     } else {
@@ -721,7 +730,6 @@
             }
         }
 
-
         // 玩家狀態更新 
         function updataPlayer() {
             if (Player.hp > Player.hpMax) {
@@ -742,7 +750,6 @@
             updateBar('hp', Math.floor(Player.hp / Player.hpMax * 100))
             updateBar('exp', Math.floor(Player.exp / Player.expMax * 100))
 
-
             // 背包生成
             document.getElementById('bag').innerHTML = '背包';
             bag_list();
@@ -753,7 +760,7 @@
             document.getElementById(`${bar_name}_bar`).style.width = bar_data + '%';
         }
 
-        // 背包列表生成
+        // 玩家背包列表生成
         function bag_list() {
             // 先清空背包
             let bag_data = {};
@@ -914,13 +921,6 @@
             document.getElementById('monster_img').classList.remove('shake-image');
         }
 
-
-
-
-
-
-
-
         // 存檔與讀檔相關
 
         document.getElementById('saveOpen').onclick = function () {
@@ -972,8 +972,13 @@
             updataPlayer()
         }
 
+        // 隨機數（1 ~ numMax）
         function rng(numMax) {
             return Math.floor(Math.random() * numMax) + 1;
+        }
+        // 隨機數（0 ~ numMax）
+        function rng0(numMax) {
+            return Math.floor(Math.random() * numMax) ;
         }
 
         // 圖片讀取
