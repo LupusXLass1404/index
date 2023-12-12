@@ -54,6 +54,12 @@
 
         let fight_record = '';
         const Event = {
+            // : {
+            //     type: '',
+            //     link: [''],
+            //     id: [''],
+            //     text: ['']
+            // },
             start: {
                 type: 'place',
                 link: ['出發！'],
@@ -64,12 +70,12 @@
                 type: 'place',
                 link: ['走入街道'],
                 id: ['street'],
-                text: ['<p>勇者踏出城堡，街道上充滿期待的目光。市民們低語祈禱，繁忙的城市生活與即將展開的冒險在此交匯。</p>']
+                text: ['<p>勇者踏出城堡，街道上充滿期待的目光。市民們低語祈禱，繁忙的城鎮生活與即將展開的冒險在此交匯。</p>']
             },
             street: {
                 type: 'place',
-                link: ['森林', '武器店', '藥水店', '旅館', '隨便找個地方休息'],
-                id: ['forest_0', 'weapon_shop', 'potion_shop', 'hostel', 'street_rest'],
+                link: ['森林', '武器店', '藥水店', '旅館', '隨便找個地方休息',],
+                id: ['forest_0', 'weapon_shop', 'potion_shop', 'hostel', 'street_rest',],
                 text: ['<p>阿瑟站在熙熙攘攘的街道，人群匆忙而熱情。</p>']
             },
             street_rest: {
@@ -91,11 +97,11 @@
                 link: ['購買', '返回街道'],
                 id: ['buy', 'street'],
                 text: ['<p>阿瑟在藥水店內。一間充滿藥瓶香氣的小店，經營各種藥水與治癒道具。冒險者在這裡尋找康復與增益的良方</p>'],
-                item: ['S_red_potion', 'M_red_potion', 'L_red_potion', 'exp_potion'],
+                item: ['S_red_potion', 'M_red_potion', 'L_red_potion',],
             },
             hostel: {
                 type: 'place',
-                link: ['休息', '返回街道'],
+                link: ['休息｜10G｜恢復滿生命值', '返回街道'],
                 id: ['hostel_rest', 'street'],
                 text: ['<p>阿瑟在旅館的大廳內。溫馨的床鋪，微弱的燭光。疲憊的冒險者在這裡找到安寧，夢想著明天的冒險。</p>']
             },
@@ -111,8 +117,8 @@
                 link: ['在附近繞繞', '深入｜離城鎮越遠、怪物越強', '回到街道'],
                 id: ['forest_0', 'forest_1', 'street'],
                 text: ['<p>阿瑟在森林入口。你能在這裡看到城鎮的城牆。城鎮的熙熙攘攘在你身後，而前方是一片神秘的樹海。</p>'],
-                monster_name: ['slime_baby', 'slime_green'],
-                monster_rng: [5, 100],
+                monster_name: ['slime_green'],
+                monster_rng: [100],
             },
             forest_1: {
                 type: 'place',
@@ -171,7 +177,7 @@
                 type: 'action',
                 link: [''],
                 id: [''],
-                text: [''],
+
             },
             def: {
                 type: 'action',
@@ -218,7 +224,7 @@
                 name: '木劍',
                 depiction: '簡單而輕巧的木劍，是初次冒險的選擇。雖然不及鐵劍堅固，但足以應對一些較弱的敵人。',
                 attack: 3,
-                shop_gold: 15,
+                shop_gold: 10,
             },
             iron_sword: {
                 type: 'weapon',
@@ -241,16 +247,6 @@
                 attack: 12,
                 shop_gold: 150,
             },
-            slime: {
-                type: 'food',
-                name: '史萊姆黏液',
-                depiction: '這份粘滑的物質來自史萊姆，具有神秘的魔法力量。你不知道它吃起來如何，恐怕你也不會想知道。',
-            },
-            slime_pacifier: {
-                type: 'loot',
-                name: '寶寶史萊姆的奶嘴',
-                depiction: '一個柔軟的、可咬的奶嘴，專為人類的小寶寶而設計。但為什麼史萊姆會有這種東西呢？',
-            },
             S_red_potion: {
                 type: 'potion',
                 name: '小瓶紅色藥水',
@@ -272,98 +268,47 @@
                 shop_gold: 30,
                 effect: { hp: 500, },
             },
-            exp_potion: {
-                type: 'potion',
-                name: '經驗藥水',
-                depiction: '充滿神秘力量的藥水，可以讓你變強。',
-                shop_gold: 1,
-                effect: { exp: 500, },
-            },
         }
 
         let monster = {};
         let monster_fix;
         const Monster = {
-            slime_baby: {
-                name: '寶寶史萊姆',
-                hp: 1,
-                attack: 0,
-                exp: 1,
-                gold: 1,
-                loot: ['slime_pacifier'],
-                text: ['<p>一個剛剛誕生的小生物，它滿是好奇心，眨著大大的眼睛看著你。他似乎毫無威脅，只是在探索這個新的環境，可能還會偶爾發出軟弱的啾聲。面對這樣一個天真無辜的生命，你真的要消滅他嗎？</p>'],
-            },
             slime_green: {
                 name: '綠色史萊姆',
                 hp: 5,
                 attack: 4,
                 exp: 4,
-                gold: 2,
-                loot: [''],
-                text: [''],
+                gold: 3,
             },
             slime_blue: {
                 name: '藍色史萊姆',
                 hp: 20,
                 attack: 7,
                 exp: 12,
-                gold: 4,
-                loot: [''],
-                text: [''],
+                gold: 6,
             },
             slime_purple: {
                 name: '紫色史萊姆',
                 hp: 50,
                 attack: 12,
                 exp: 26,
-                gold: 6,
-                loot: [''],
-                text: [''],
+                gold: 9,
             },
             slime_orange: {
                 name: '橘色史萊姆',
                 hp: 100,
                 attack: 22,
                 exp: 36,
-                gold: 8,
-                loot: [''],
-                text: [''],
+                gold: 12,
             },
             slime_red: {
                 name: '紅色史萊姆',
                 hp: 200,
                 attack: 31,
                 exp: 50,
-                gold: 10,
-                loot: [''],
-                text: [''],
+                gold: 15,
             },
-            slime_Boss: {
-                name: '史萊姆國王',
-                hp: 700,
-                attack: 60,
-                exp: 500,
-                gold: 100,
-                loot: [],
-                text: [''],
-            },
-            // slime_pink: {
-            //     name: '粉色史萊姆',
-            //     hp: ,
-            //     attack: ,
-            //     exp: ,
-            //     gold: ,
-            //     loot: [],
-            //     text: [''],
-            // },
         }
-
-        const skill = [
-            {
-                name: '重擊',
-                attack: 2
-            },
-        ]
 
         var textPlayer = {
             lv: '等級：',
@@ -597,11 +542,11 @@
 
                     // 減少玩家血量
                     Player.hp -= monster.attack;
-                    
-                    let arrText = ['你舉劍衝向怪物，','你揮動長劍，直取怪物要害。','你猛然揮劍，'];
-                    
+
+                    let arrText = ['你舉劍衝向怪物，', '你揮動長劍，直取怪物要害。', '你猛然揮劍，'];
+
                     // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `<p>${arrText[rng0(3)]}<span class="green">對 ${monster.name} 造成了 ${Player.attack} 點傷害。</p><p></span>${monster.name} 撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
+                    document.getElementById('fight_action').innerHTML = `<p>${arrText[rng0(3)]}<span class="green">對 ${monster.name} 造成了 ${attr} 點傷害。</p><p></span>${monster.name} 撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
 
                 } if (event == 'def') {
                     // 減少玩家血量
@@ -610,7 +555,7 @@
 
 
                     // 防禦文本
-                    document.getElementById('fight_action').innerHTML = `你抵擋了 ${monster.name} 的攻擊。你損失了 ${hurt} 點生命值。`;
+                    document.getElementById('fight_action').innerHTML = `你抵擋了 ${monster.name} 的攻擊。<span class="red">你損失了 ${hurt} 點生命值。</span>`;
 
                 } if (event == 'run') {
                     run++;
@@ -865,6 +810,7 @@
                 Player.hpMax += Player.lv * 10;
                 Player.hp = Player.hpMax;
                 Player.expMax += Player.lv * 10;
+                document.getElementById('tip').innerHTML = '<p><span class="gold">你升級了。</span></p>';
                 // 如果經驗還有溢出，則繼續升級
                 if (Player.exp >= Player.expMax) {
                     level_up()
@@ -986,7 +932,7 @@
         }
         // 隨機數（0 ~ numMax）
         function rng0(numMax) {
-            return Math.floor(Math.random() * numMax) ;
+            return Math.floor(Math.random() * numMax);
         }
 
         // 圖片讀取
