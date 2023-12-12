@@ -8,6 +8,7 @@ body {
     background-color: #1a1919;
     font-family: Verdana;
     padding: 0px 120px;
+    overflow-x: hidden;
 }
 
 #start {
@@ -114,9 +115,7 @@ body {
     margin-bottom: 28px;
 }
 
-#img {
-    text-align: center;
-}
+
 
 /* 淡入淡出 */
 .fadeOut {

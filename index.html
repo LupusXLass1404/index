@@ -9,8 +9,6 @@
 
 </head>
 
-
-
 <body>
     <div id="start">
         <h2 id="title">RPG冒險：勇者的使命</h2>
@@ -483,6 +481,7 @@
             let E = Event[event];
             // console.log(Event[event]);
             let content = document.getElementById('content');
+            
             document.getElementById('tip').innerHTML = '';
             document.getElementById('UI').innerHTML = '';
             level_up();
@@ -512,6 +511,10 @@
                     }
                 }
                 // 重置逃跑判定
+                if (run == 0) {
+                    document.getElementById('action').innerHTML = '';
+                }
+
                 run = 0;
 
             } if (E.type == 'buy') {
@@ -567,9 +570,9 @@
                 // 顯示遭遇怪物的文本
                 document.getElementById('fight_monster').style.display = 'block';
                 // 生成怪物血量
-                document.getElementById('tip').innerHTML = `${monster.name} 的生命值：${monster.hp}／${monster.hpMax}`;
+                document.getElementById('tip').innerHTML = `<p>${monster.name} 的生命值：${monster.hp}／${monster.hpMax}</p>`;
                 // 生成怪物圖片
-                document.getElementById('img').innerHTML = `<img id="monster_img" class="monster_img" src="img/${monster_fix}.png"></img>`;
+                loadimg(`img/${monster_fix}.png`);
 
             } if (E.type == 'action') {
                 // 隱藏存檔按鈕
@@ -586,7 +589,7 @@
                     Player.hp -= monster.attack;
 
                     // 攻擊文本
-                    document.getElementById('fight_action').innerHTML = `你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</span>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span>`;
+                    document.getElementById('fight_action').innerHTML = `<p>你攻擊了 ${monster.name}。<span class="green">你對 ${monster.name} 造成了 ${Player.attack} 點傷害。</p><p></span>${monster.name} 用身體撞擊了你，<span class="red">你損失了 ${`${monster.attack}`} 點生命值。</span></p>`;
 
                 } if (event == 'def') {
                     // 減少玩家血量
@@ -603,8 +606,10 @@
                     setTimeout(function () {
                         contentShow()
                     }, 100); 1
+                    // 清空怪物圖片
+                    document.getElementById('img').innerHTML = '';
                     textChange(placePrev);
-
+                    document.getElementById('action').innerHTML ='<p><span class="gold">你逃跑了。</span></p>';
                 }
                 // 記錄文本，等待戰鬥結果使用
                 fight_record = document.getElementById('fight_action').innerHTML;
@@ -679,6 +684,7 @@
                 Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
             }
 
+
             // 點擊事件
             for (let i = 0; i < E.link.length; i++) {
                 // console.log(document.getElementById(`${E.id[i]}`))
@@ -689,8 +695,8 @@
 
                         setTimeout(function () {
                             stopShake();
-                            console.log(this.id)
                             textChange(E.id[i]);
+                            textChange3(event)
                         }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
 
                     } else {
@@ -968,6 +974,32 @@
 
         function rng(numMax) {
             return Math.floor(Math.random() * numMax) + 1;
+        }
+
+        // 圖片讀取
+        function loadimg(url) {
+            // 獲取容器元素
+            var container = document.getElementById('img');
+
+            // 創建一個新的 Image 對象
+            var image = new Image();
+            console.log('test');
+            // 當圖片加載成功時觸發的事件
+            image.onload = function () {
+                // 將圖片添加到指定的容器中
+                document.getElementById('img').style.display = 'block';
+                container.appendChild(image);
+            };
+
+            // 當圖片加載失敗時觸發的事件
+            image.onerror = function () {
+                // 在控制台輸出錯誤消息，或執行其他相應的處理
+                document.getElementById('img').style.display = 'none';
+                console.log("圖片加載失敗");
+            };
+
+            // 設定圖片的URL，這一步會觸發圖片加載過程
+            image.src = url;
         }
 
 
