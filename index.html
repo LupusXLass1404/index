@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG冒險：勇者的使命</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="css/old_style.css">
 
 </head>
 
@@ -13,7 +14,6 @@
     <div id="start">
         <h2 id="title">RPG冒險：勇者的使命</h2>
         <button id="startBnt" class="link">開始遊戲</button>
-        <div id="test"></div>
     </div>
 
     <div id="main" style="display: none;">
@@ -49,7 +49,7 @@
         <div id="readClose" class="btn">關閉視窗</div>
     </dialog>
 
-    <script src="https://unpkg.com/mousetrap"></script>
+    <script src="plugin/mousetrap.js"></script>
     <script>
 
         let fight_record = '';
@@ -682,59 +682,7 @@
         }
 
         function onclickBtn(event) {
-            let E = Event[event];
-            // 更換文本
-            document.getElementById('text').innerHTML = E.text;
-            // 重置選項
-            document.getElementById('opts').innerHTML = '';
-            // 重置鍵盤事件
-            for (let i = 0; i < 9; i++) {
-                Mousetrap.bind(`${i + 1}`, function () { console.log('無事件') });
-            }
 
-            // 建構頁面選項
-            for (let i = 0; i < E.link.length; i++) {
-                document.getElementById('opts').innerHTML += E.link[i];
-            }
-
-
-
-            // 點擊事件
-            for (let i = 0; i < E.link.length; i++) {
-                // console.log(document.getElementById(`${E.id[i]}`))
-                document.getElementById(`${E.id[i]}`).onclick = function () {
-                    if (this.id == 'att') {
-
-                        // 圖片開始晃動
-                        startShake()
-
-                        // 時間到後圖片停止晃動，並改變文字
-                        setTimeout(function () {
-                            stopShake();
-                            textChange(E.id[i]);
-                            onclickBtn(event);
-                        }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
-
-                    } else {
-                        textChange(this.id);
-                    }
-                }
-                // 增加鍵盤事件
-                Mousetrap.bind(`${i + 1}`, function () {
-                    if (E.id[i] == 'att') {
-                        // 開始搖
-                        startShake()
-
-                        setTimeout(function () {
-                            stopShake();
-                            textChange(E.id[i]);
-                        }, 500); // 這裡的500表示0.5秒，與CSS動畫時間一致
-
-                    } else {
-                        textChange(E.id[i]);
-                    }
-                });
-            }
         }
 
         // 玩家狀態更新 

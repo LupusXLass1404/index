@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      
+    </style>
+</head>
+
+<body>
+
+    <button data-toggle-class="foo" data-target="bar" type="button">开关</button>
+    <div id="bar">54153453453453453</div>
+    <script>
+        const toggleClass = document.querySelectorAll('[data-toggle-class]');
+        if (toggleClass) {
+            for (let i = 0; i < toggleClass.length; i += 1) {
+                const elem = toggleClass[i];
+                elem.addEventListener('click', () => {
+                    const className = elem.getAttribute('data-toggle-class');
+                    const target = elem.getAttribute('data-target');
+                    document.getElementById(target).classList.toggle(className);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
